@@ -18,7 +18,7 @@ export const metadata: Metadata = {
     "PJ Ours is a premium juice, shake, and pickup ordering website with quick menu browsing and WhatsApp checkout.",
   manifest: "/manifest.webmanifest",
   icons: {
-    icon: "/icon.svg",
+    icon: "/logo.png",
   },
 };
 

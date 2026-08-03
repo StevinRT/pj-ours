@@ -306,8 +306,12 @@ export default function Home() {
         <div className="relative mx-auto flex max-w-7xl flex-col px-4 pb-12 pt-6 sm:px-6 lg:px-8">
           <header className="mb-8 flex items-center justify-between rounded-full border border-white/10 bg-white/5 px-4 py-3 backdrop-blur md:px-6">
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-amber-400 text-lg text-black">
-                🧃
+              <div className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-full bg-white/10">
+                <img
+                  src="/logo.png"
+                  alt="PJ Ours logo"
+                  className="h-full w-full object-cover"
+                />
               </div>
               <div>
                 <p className="text-sm font-semibold tracking-[0.3em] text-amber-300">PJ OURS</p>
