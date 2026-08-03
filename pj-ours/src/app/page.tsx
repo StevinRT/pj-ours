@@ -1455,7 +1455,7 @@ export default function Home() {
               </div>
               <div className="grid gap-3 sm:grid-cols-3">
                 <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
-                  <p className="text-2xl font-bold text-amber-300">4</p>
+                  <p className="text-2xl font-bold text-amber-300">2</p>
                   <p className="text-sm text-zinc-300">Outlet branches</p>
                 </div>
                 <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
