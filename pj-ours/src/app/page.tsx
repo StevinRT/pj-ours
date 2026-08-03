@@ -1191,7 +1191,7 @@ const branches: Branch[] = [
   {
     id: "east-fort",
     name: "East Fort",
-    phone: "+91XXXXXXXXXX",
+    phone: "+918590012678",
     maps: "https://maps.app.goo.gl/ZhTZbv3ixjrjf3Zh8",
     hours: "11:00 AM - 11:00 PM",
     coords: { lat: 8.4874, lng: 76.9569 },
@@ -1199,7 +1199,7 @@ const branches: Branch[] = [
   {
     id: "west-fort",
     name: "West Fort",
-    phone: "+91XXXXXXXXXX",
+    phone: "+917012611090",
     maps: "https://maps.app.goo.gl/8ET1tpA34FwpGELb6",
     hours: "12:00 PM - 10:30 PM",
     coords: { lat: 8.4978, lng: 76.9524 },
