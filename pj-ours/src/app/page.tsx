@@ -363,6 +363,7 @@ export default function Home() {
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [searchTerm, setSearchTerm] = useState("");
   const [cart, setCart] = useState<Record<string, number>>({});
+  const [parcelOption, setParcelOption] = useState(false);
   const [selectedSizeByItem, setSelectedSizeByItem] = useState<Record<number, string>>(() =>
     Object.fromEntries(menuItems.map((item) => [item.id, item.sizes[0]?.label ?? ""])),
   );
@@ -452,8 +453,8 @@ export default function Home() {
   }, [searchTerm, selectedCategory]);
 
   const subtotal = useMemo(
-    () => cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0),
-    [cartItems],
+    () => cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0) + (parcelOption ? 5 : 0),
+    [cartItems, parcelOption],
   );
 
   const selectedBranch = branches.find((branch) => branch.id === branchId) ?? branches[0];
@@ -518,6 +519,8 @@ export default function Home() {
       "",
       "Items:",
       ...orderLines,
+      "",
+      parcelOption ? "Parcel option: +₹5" : "Parcel option: not selected",
       "",
       "Total:",
       `₹${subtotal}`,
@@ -752,7 +755,7 @@ export default function Home() {
 
       <section className="mx-auto grid max-w-7xl gap-6 px-4 py-5 sm:px-6 lg:grid-cols-[1.1fr_0.9fr] lg:px-8">
         <div className="rounded-[1.6rem] border border-white/10 bg-white/5 p-4 sm:p-6">
-          <div className="mb-4 flex items-center justify-between">
+          <div className="mb-4 flex items-center justify-between gap-2">
             <div>
               <p className="text-sm font-semibold uppercase tracking-[0.3em] text-amber-300">Shopping Cart</p>
               <h2 className="mt-2 text-2xl font-bold">Your order</h2>
@@ -761,6 +764,16 @@ export default function Home() {
               Total ₹{subtotal}
             </div>
           </div>
+
+          <label className="mb-4 flex items-center gap-3 rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-sm text-zinc-200">
+            <input
+              type="checkbox"
+              checked={parcelOption}
+              onChange={(event) => setParcelOption(event.target.checked)}
+              className="h-4 w-4 rounded border-white/20 bg-black/20 text-amber-400"
+            />
+            Parcel option (+₹5)
+          </label>
 
           <div className="space-y-3">
             {cartItems.length === 0 ? (
