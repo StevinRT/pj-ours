@@ -301,18 +301,28 @@ const menuSectionCatalog = [
 ] as const;
 
 const menuItems: MenuItem[] = menuSectionCatalog.flatMap((section, sectionIndex) =>
-  section.items.map(([name, prices], itemIndex) => ({
-    id: sectionIndex * 100 + itemIndex + 1,
-    name,
-    category: section.category,
-    emoji: section.emoji,
-    description: section.description,
-    badge: section.badge,
-    sizes: prices.map((price, sizeIndex) => ({
-      label: ["500 ML", "1 Liter", "Parcel"][sizeIndex] ?? `Size ${sizeIndex + 1}`,
-      price,
-    })),
-  })),
+  section.items.map(([name, prices], itemIndex) => {
+    const priceList = [...prices] as number[];
+    const sizeLabels =
+      priceList.length >= 3
+        ? ["500 ML", "1 Liter", "Parcel"]
+        : priceList.length === 2
+          ? ["500 ML", "1 Liter"]
+          : ["Regular"];
+
+    return {
+      id: sectionIndex * 100 + itemIndex + 1,
+      name,
+      category: section.category,
+      emoji: section.emoji,
+      description: section.description,
+      badge: section.badge,
+      sizes: priceList.map((price, sizeIndex) => ({
+        label: sizeLabels[sizeIndex] ?? `Size ${sizeIndex + 1}`,
+        price,
+      })),
+    };
+  }),
 );
 
 const branches: Branch[] = [
