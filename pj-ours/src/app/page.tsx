@@ -1538,6 +1538,25 @@ export default function Home() {
           </div>
         </div>
 
+        <div className="mb-6 grid gap-4 lg:grid-cols-2">
+          <div className="rounded-[1.6rem] border border-white/10 bg-white/5 p-3">
+            <p className="mb-3 text-sm font-semibold uppercase tracking-[0.3em] text-amber-300">Menu Page 1</p>
+            <img
+              src="/updated-menu-pages/updated-menu-page-1.png"
+              alt="PJ Ours menu page 1"
+              className="w-full rounded-2xl border border-white/10 bg-black/20"
+            />
+          </div>
+          <div className="rounded-[1.6rem] border border-white/10 bg-white/5 p-3">
+            <p className="mb-3 text-sm font-semibold uppercase tracking-[0.3em] text-amber-300">Menu Page 2</p>
+            <img
+              src="/updated-menu-pages/updated-menu-page-2.png"
+              alt="PJ Ours menu page 2"
+              className="w-full rounded-2xl border border-white/10 bg-black/20"
+            />
+          </div>
+        </div>
+
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
           {filteredItems.map((item) => (
             <motion.article
