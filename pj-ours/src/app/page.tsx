@@ -305,7 +305,7 @@ const menuItems: MenuItem[] = menuSectionCatalog.flatMap((section, sectionIndex)
     const priceList = [...prices] as number[];
     const sizeLabels =
       priceList.length >= 3
-        ? ["500 ML", "1 Liter", "Parcel"]
+        ? ["Regular", "500 ML", "1 Liter"]
         : priceList.length === 2
           ? ["500 ML", "1 Liter"]
           : ["Regular"];
