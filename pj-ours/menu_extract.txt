@@ -1,0 +1,601 @@
+pages 2
+
+--- PAGE 1 ---
+Parcel
+500 ML
+Parcel
+1 Liter
+Apple Chickoo
+70
+135
+255
+Apple Papaya
+70
+135
+255
+Badam Pista
+70
+135
+255
+Chickoo Chocolate
+70
+135
+255
+Chickoo Sharjah
+70
+135
+255
+Chickoo Custard Apple
+70
+135
+255
+Chocolate Caramel
+70
+135
+255
+Chocolate Oreo
+70
+135
+255
+Chocolate Sharjah
+70
+135
+255
+Grape Pineapple
+70
+135
+255
+Kitkat Oreo
+70
+135
+255
+Oreo Caramel
+70
+135
+255
+Oreo Sharjah
+70
+135
+255
+Papaya Chickoo
+70
+135
+255
+Papaya Mango
+70
+135
+255
+Papaya Sharjah
+70
+135
+255
+Saudi Caramel
+70
+135
+255
+Sharjah Saudi
+70
+135
+255
+Tender Butter 
+90
+175
+335
+Tender Cashew
+100
+205
+400
+Tender Chickoo
+90
+175
+335
+Tender Dates
+90
+175
+335
+Tender Mango
+90
+175
+335
+Tender Caramel
+90
+175
+335
+Tender Chocolate
+90
+175
+335
+AVIL MILK
+70
+Parcel
+500 ML
+Parcel
+1 Liter
+Milk Shake
+Parcel
+500 ML
+Parcel
+1 Liter
+Fusion Shake
+Juice
+Anar
+70
+135
+260
+Apple
+70
+135
+260
+Carrot
+50
+105
+200
+Cucumber
+40
+85
+160
+Dragon Fruit
+60
+125
+250
+Gooseberry
+70
+135
+260
+Grape
+50
+105
+200
+Guava lemon
+50
+105
+200
+Kiwi
+80
+165
+320
+Lemon Fresh
+30
+65
+120
+Lemon Soda Chilli
+40
+Lemon Grape
+50
+105
+200
+Lemon Mint
+50
+105
+200
+Lemon Pineapple
+50
+105
+200
+Mango
+60
+125
+240
+Mosambi
+60
+125
+240
+Muskmelon
+50
+105
+200
+Orange
+60
+125
+240
+Orange Lemon
+60
+125
+240
+Papaya
+50
+105
+200
+Passion Fruit
+80
+165
+320
+Pineapple
+60
+125
+240
+Strawberry
+70
+135
+260
+Watermelon
+50
+105
+200
+Beetroot
+50
+105
+200
+ABC
+90
+180
+350
+Cucumber Lemon
+50
+105
+200
+Cucumber Pineapple
+60
+125
+250
+Cucumber Orange
+70
+135
+260
+Apple
+60
+125
+250
+Avocado
+70
+135
+255
+Avocado Honey
+90
+185
+360
+Badam
+50
+105
+200
+Banana
+50
+105
+200
+Blueberry
+70
+135
+260
+Boost
+60
+125
+240
+Brownie
+60
+125
+240
+Butterscotch
+50
+105
+200
+Caramel
+60
+125
+240
+Cherry
+50
+105
+200
+Chickoo
+60
+125
+240
+Chocolate
+50
+105
+200
+Coffee Blast
+60
+125
+240
+Cold coffee
+60
+125
+240
+Custard Apple
+60
+125
+240
+Dark Fantasy
+50
+105
+200
+Dates (Saudi)
+50
+105
+200
+Dragon Fruit
+60
+125
+250
+Dry Fruits
+80
+165
+320
+Grapes
+50
+105
+200
+Guava
+50
+105
+200
+Horlicks
+60
+125
+240
+Ice apple
+60
+125
+240
+Malai Kulfi
+80
+165
+320
+Kiwi
+90
+185
+360
+Lotus
+60
+125
+240
+Mango
+60
+125
+240
+Mixed fruit
+70
+135
+260
+Muskmelon
+50
+105
+200
+Oreo
+50
+105
+200
+Papaya
+50
+105
+200
+Peanut Butter
+80
+165
+320
+Pineapple
+50
+105
+200
+Pista
+50
+105
+200
+Pomegranate (Anar)
+70
+135
+260
+Strawberry
+60
+125
+240
+Dryfruits Special
+100
+205
+400
+Vanila
+50
+105
+200
+Tender Coconut
+70
+145
+280
+
+
+--- PAGE 2 ---
+Ice Cream
+Black Currant
+0
+Butterscotch
+100
+Choco Chips
+100
+Chocolate
+100
+English Delight
+100
+Fig Dates And Honey
+100
+Mango
+100
+Mocha
+100
+Pineapple
+100
+Pista
+100
+Red Velvet
+100
+Strawberry 
+100
+Vancho
+100
+Vanila
+100
+Banana Mastani
+110
+Mango Mastani
+110
+Papaya Mastani
+110
+Pineapple Mastani
+110
+Avocado Galaxy
+110
+Banana Galaxy
+110
+Caramel Galaxy
+110
+Chickoo Galaxy 
+110
+Grape Galaxy
+110
+Mango Galaxy
+110
+Oreo Galaxy
+110
+Papaya Galaxy
+110
+Pineapple Galaxy
+110
+Saudi Galaxy
+110
+Tender Galaxy
+110
+10
+Blue Curacao 
+80
+Blueberry 
+80
+Green Apple
+80
+Green Seed
+80
+Hot Gooseberry (spicy)
+80
+Kiwi
+80
+Litchi 
+80
+Mango Slice
+80
+Mexican
+80
+Mint
+80
+Red Flame
+80
+Red Freeze
+80
+Valencia (Orange)
+80
+Virgin
+60
+Wineyard (Grape)
+80
+Yellow Flower (Pineapple)
+80
+Carrot Pineapple
+70
+135
+255
+Grape Pineapple
+70
+135
+255
+Mosambi Orange
+70
+135
+255
+Papaya Pineapple
+70
+135
+255
+Papaya Carrot
+70
+135
+255
+Shamam Mango
+70
+135
+255
+Shamam Papaya
+70
+135
+255
+Water Melon Carrot
+70
+135
+255
+500
+ML
+1
+Liter
+Mocktail
+Fruit Soda
+Mojito
+Falooda
+Ice Cream Shakes
+Cake Falooda
+175
+Chocolate Falooda
+170
+Dry Fruits Falooda
+200
+Gulab Jamun Falooda
+175
+Mango Falooda
+160
+Royal Falooda
+160
+Royal Falooda Special
+190
+Strawberry Falooda
+160
+Pineapple Falooda
+160
+Fruit Punch Falooda
+170
+Kulfi Falooda
+170
+Chocolate Brownie Magic
+150
+Caramel Mocha Sundae
+150
+Double Chocolate Cookie Fiesta 150
+Dryfruits with Cake
+150
+Wafer Crown with Cookie
+150
+Dark Vanila with Coffee Fills
+150
+Fruit Salad with Ice Cream
+90
+Fruit salad
+70
+Sizzling Brownie
+140
+Chocolate Sizzler
+180
+Strawberry Sizzler
+180
+Single Scoop
+50
+Double Scoop
+80
+Anar soda
+50
+Apple Soda
+50
+Carrot soda
+50
+Grape soda
+50
+Guava soda
+50
+Mango soda
+50
+Mosambi soda
+50
+Orange soda
+50
+Passion Fruit soda
+60
+Pineapple soda
+50
+Shaman soda
+50
+Hawaiian Fresh Fruit Salad
+120
