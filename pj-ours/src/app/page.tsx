@@ -3,7 +3,7 @@
 import { motion } from "framer-motion";
 import { useEffect, useMemo, useState } from "react";
 
-type Variant = {
+type MenuSize = {
   label: string;
   price: number;
 };
@@ -15,7 +15,7 @@ type MenuItem = {
   emoji: string;
   description: string;
   badge: string;
-  variants: Variant[];
+  sizes: MenuSize[];
 };
 
 type Branch = {
@@ -27,1212 +27,293 @@ type Branch = {
   coords: { lat: number; lng: number };
 };
 
-const menuItems: MenuItem[] = [
+const menuSectionCatalog = [
   {
-    id: 1,
-    name: "Apple Chickoo",
-    category: "Special Shake",
-    emoji: "🍏",
-    description: "Bright apple-chickoo blend with a creamy finish.",
-    badge: "Signature",
-    variants: [
-      { label: "500 ML", price: 70 },
-      { label: "Parcel", price: 135 },
-      { label: "1 Liter", price: 255 },
-    ],
-  },
-  {
-    id: 2,
-    name: "Apple Papaya",
-    category: "Special Shake",
-    emoji: "🥭",
-    description: "Smooth papaya sweetness with a clean apple lift.",
-    badge: "Fresh",
-    variants: [
-      { label: "500 ML", price: 70 },
-      { label: "Parcel", price: 135 },
-      { label: "1 Liter", price: 255 },
-    ],
-  },
-  {
-    id: 3,
-    name: "Badam Pista",
-    category: "Special Shake",
-    emoji: "🌰",
-    description: "Nutty richness with a soft creamy body.",
-    badge: "Premium",
-    variants: [
-      { label: "500 ML", price: 70 },
-      { label: "Parcel", price: 135 },
-      { label: "1 Liter", price: 255 },
-    ],
-  },
-  {
-    id: 4,
-    name: "Chickoo Chocolate",
-    category: "Special Shake",
-    emoji: "🍫",
-    description: "Soft chickoo notes blended with chocolate depth.",
-    badge: "Rich",
-    variants: [
-      { label: "500 ML", price: 70 },
-      { label: "Parcel", price: 135 },
-      { label: "1 Liter", price: 255 },
-    ],
-  },
-  {
-    id: 5,
-    name: "Chickoo Sharjah",
-    category: "Special Shake",
-    emoji: "🥭",
-    description: "A classic chickoo shake with a bold sweet finish.",
-    badge: "Classic",
-    variants: [
-      { label: "500 ML", price: 70 },
-      { label: "Parcel", price: 135 },
-      { label: "1 Liter", price: 255 },
-    ],
-  },
-  {
-    id: 6,
-    name: "Chickoo Custard Apple",
-    category: "Special Shake",
-    emoji: "🍐",
-    description: "Silky custard apple with a mellow chickoo base.",
-    badge: "Smooth",
-    variants: [
-      { label: "500 ML", price: 70 },
-      { label: "Parcel", price: 135 },
-      { label: "1 Liter", price: 255 },
-    ],
-  },
-  {
-    id: 7,
-    name: "Chocolate Caramel",
-    category: "Special Shake",
-    emoji: "🍫",
-    description: "Velvety chocolate with a caramel swirled kick.",
-    badge: "Sweet",
-    variants: [
-      { label: "500 ML", price: 70 },
-      { label: "Parcel", price: 135 },
-      { label: "1 Liter", price: 255 },
-    ],
-  },
-  {
-    id: 8,
-    name: "Chocolate Oreo",
-    category: "Special Shake",
-    emoji: "🍪",
-    description: "Cookie crunch meets rich chocolate shake style.",
-    badge: "Favourite",
-    variants: [
-      { label: "500 ML", price: 70 },
-      { label: "Parcel", price: 135 },
-      { label: "1 Liter", price: 255 },
-    ],
-  },
-  {
-    id: 9,
-    name: "Chocolate Sharjah",
-    category: "Special Shake",
-    emoji: "🍫",
-    description: "Chocolate-forward shake with a smooth dense body.",
-    badge: "Popular",
-    variants: [
-      { label: "500 ML", price: 70 },
-      { label: "Parcel", price: 135 },
-      { label: "1 Liter", price: 255 },
-    ],
-  },
-  {
-    id: 10,
-    name: "Grape Pineapple",
-    category: "Special Shake",
-    emoji: "🍇",
-    description: "A bright tropical mix with juicy grape sweetness.",
-    badge: "Tropical",
-    variants: [
-      { label: "500 ML", price: 70 },
-      { label: "Parcel", price: 135 },
-      { label: "1 Liter", price: 255 },
-    ],
-  },
-  {
-    id: 11,
-    name: "Kitkat Oreo",
-    category: "Special Shake",
-    emoji: "🍫",
-    description: "Crunchy candy-inspired shake with creamy texture.",
-    badge: "Candy Twist",
-    variants: [
-      { label: "500 ML", price: 70 },
-      { label: "Parcel", price: 135 },
-      { label: "1 Liter", price: 255 },
-    ],
-  },
-  {
-    id: 12,
-    name: "Oreo Caramel",
-    category: "Special Shake",
+    category: "Parcel",
     emoji: "🥤",
-    description: "Creamy caramel and biscuit blend with extra richness.",
-    badge: "Soft",
-    variants: [
-      { label: "500 ML", price: 70 },
-      { label: "Parcel", price: 135 },
-      { label: "1 Liter", price: 255 },
-    ],
-  },
-  {
-    id: 13,
-    name: "Oreo Sharjah",
-    category: "Special Shake",
-    emoji: "🍪",
-    description: "Balanced biscuit shake with a smooth dessert finish.",
-    badge: "Classic",
-    variants: [
-      { label: "500 ML", price: 70 },
-      { label: "Parcel", price: 135 },
-      { label: "1 Liter", price: 255 },
-    ],
-  },
-  {
-    id: 14,
-    name: "Papaya Chickoo",
-    category: "Special Shake",
-    emoji: "🥭",
-    description: "A mellow fruit blend for a fresh tropical sip.",
-    badge: "Smooth",
-    variants: [
-      { label: "500 ML", price: 70 },
-      { label: "Parcel", price: 135 },
-      { label: "1 Liter", price: 255 },
-    ],
-  },
-  {
-    id: 15,
-    name: "Papaya Mango",
-    category: "Special Shake",
-    emoji: "🥭",
-    description: "A juicy fruit blend with a rich creamy balance.",
-    badge: "Sunny",
-    variants: [
-      { label: "500 ML", price: 70 },
-      { label: "Parcel", price: 135 },
-      { label: "1 Liter", price: 255 },
-    ],
-  },
-  {
-    id: 16,
-    name: "Papaya Sharjah",
-    category: "Special Shake",
-    emoji: "🥭",
-    description: "Papaya-based shake with a mellow sweet finish.",
-    badge: "Artsy",
-    variants: [
-      { label: "500 ML", price: 70 },
-      { label: "Parcel", price: 135 },
-      { label: "1 Liter", price: 255 },
-    ],
-  },
-  {
-    id: 17,
-    name: "Saudi Caramel",
-    category: "Special Shake",
-    emoji: "🍯",
-    description: "Golden caramel tones with a smooth dessert profile.",
-    badge: "Rich",
-    variants: [
-      { label: "500 ML", price: 70 },
-      { label: "Parcel", price: 135 },
-      { label: "1 Liter", price: 255 },
-    ],
-  },
-  {
-    id: 18,
-    name: "Sharjah Saudi",
-    category: "Special Shake",
-    emoji: "🌟",
-    description: "A sweet, creamy indulgence with a classic café profile.",
-    badge: "Cafe Special",
-    variants: [
-      { label: "500 ML", price: 70 },
-      { label: "Parcel", price: 135 },
-      { label: "1 Liter", price: 255 },
-    ],
-  },
-  {
-    id: 19,
-    name: "Tender Butter",
-    category: "Milk Shake",
-    emoji: "🧈",
-    description: "Creamy butter-flavoured shake with a mellow finish.",
-    badge: "Smooth",
-    variants: [
-      { label: "500 ML", price: 90 },
-      { label: "Parcel", price: 175 },
-      { label: "1 Liter", price: 335 },
-    ],
-  },
-  {
-    id: 20,
-    name: "Tender Cashew",
-    category: "Milk Shake",
-    emoji: "🥭",
-    description: "Silky cashew-based shake with a premium aftertaste.",
-    badge: "Nutty",
-    variants: [
-      { label: "500 ML", price: 100 },
-      { label: "Parcel", price: 205 },
-      { label: "1 Liter", price: 400 },
-    ],
-  },
-  {
-    id: 21,
-    name: "Tender Chickoo",
-    category: "Milk Shake",
-    emoji: "🥭",
-    description: "Comforting chickoo shake for a rich fruit-driven sip.",
-    badge: "Classic",
-    variants: [
-      { label: "500 ML", price: 90 },
-      { label: "Parcel", price: 175 },
-      { label: "1 Liter", price: 335 },
-    ],
-  },
-  {
-    id: 22,
-    name: "Tender Dates",
-    category: "Milk Shake",
-    emoji: "🌙",
-    description: "Mild date sweetness with a smooth creamy finish.",
-    badge: "Dessert",
-    variants: [
-      { label: "500 ML", price: 90 },
-      { label: "Parcel", price: 175 },
-      { label: "1 Liter", price: 335 },
-    ],
-  },
-  {
-    id: 23,
-    name: "Tender Mango",
-    category: "Milk Shake",
-    emoji: "🥭",
-    description: "Tropical mango richness in a lush smooth shake.",
-    badge: "Summer",
-    variants: [
-      { label: "500 ML", price: 90 },
-      { label: "Parcel", price: 175 },
-      { label: "1 Liter", price: 335 },
-    ],
-  },
-  {
-    id: 24,
-    name: "Tender Caramel",
-    category: "Milk Shake",
-    emoji: "🍯",
-    description: "Creamy caramel shake with a smooth indulgent body.",
-    badge: "Caramel",
-    variants: [
-      { label: "500 ML", price: 90 },
-      { label: "Parcel", price: 175 },
-      { label: "1 Liter", price: 335 },
-    ],
-  },
-  {
-    id: 25,
-    name: "Tender Chocolate",
-    category: "Milk Shake",
-    emoji: "🍫",
-    description: "Classic chocolate comfort with a velvety finish.",
-    badge: "Classic",
-    variants: [
-      { label: "500 ML", price: 90 },
-      { label: "Parcel", price: 175 },
-      { label: "1 Liter", price: 335 },
-    ],
-  },
-  {
-    id: 26,
-    name: "Anar",
-    category: "Juice",
-    emoji: "🍎",
-    description: "Fresh pomegranate juice with a tart fruit burst.",
-    badge: "Juicy",
-    variants: [
-      { label: "500 ML", price: 70 },
-      { label: "Parcel", price: 135 },
-      { label: "1 Liter", price: 260 },
-    ],
-  },
-  {
-    id: 27,
-    name: "Apple",
-    category: "Juice",
-    emoji: "🍏",
-    description: "Crisp apple refreshment with a clean finish.",
-    badge: "Fresh",
-    variants: [
-      { label: "500 ML", price: 70 },
-      { label: "Parcel", price: 135 },
-      { label: "1 Liter", price: 260 },
-    ],
-  },
-  {
-    id: 28,
-    name: "Carrot",
-    category: "Juice",
-    emoji: "🥕",
-    description: "Bright carrot juice with a natural sweet finish.",
-    badge: "Healthy",
-    variants: [
-      { label: "500 ML", price: 50 },
-      { label: "Parcel", price: 105 },
-      { label: "1 Liter", price: 200 },
-    ],
-  },
-  {
-    id: 29,
-    name: "Cucumber",
-    category: "Juice",
-    emoji: "🥒",
-    description: "Cooling cucumber refreshment with a light finish.",
-    badge: "Cool",
-    variants: [
-      { label: "500 ML", price: 40 },
-      { label: "Parcel", price: 85 },
-      { label: "1 Liter", price: 160 },
-    ],
-  },
-  {
-    id: 30,
-    name: "Dragon Fruit",
-    category: "Juice",
-    emoji: "🐉",
-    description: "Vitamin-rich dragon fruit with a gentle sweetness.",
-    badge: "Tropical",
-    variants: [
-      { label: "500 ML", price: 60 },
-      { label: "Parcel", price: 125 },
-      { label: "1 Liter", price: 250 },
-    ],
-  },
-  {
-    id: 31,
-    name: "Gooseberry",
-    category: "Juice",
-    emoji: "🍏",
-    description: "Tangy gooseberry juice with a fresh zesty taste.",
-    badge: "Zesty",
-    variants: [
-      { label: "500 ML", price: 70 },
-      { label: "Parcel", price: 135 },
-      { label: "1 Liter", price: 260 },
-    ],
-  },
-  {
-    id: 32,
-    name: "Grape",
-    category: "Juice",
-    emoji: "🍇",
-    description: "Bold grape juice with a sweet refreshing finish.",
-    badge: "Classic",
-    variants: [
-      { label: "500 ML", price: 50 },
-      { label: "Parcel", price: 105 },
-      { label: "1 Liter", price: 200 },
-    ],
-  },
-  {
-    id: 33,
-    name: "Guava Lemon",
-    category: "Juice",
-    emoji: "🍈",
-    description: "A crisp tangy cup with guava brightness.",
-    badge: "Citrus",
-    variants: [
-      { label: "500 ML", price: 50 },
-      { label: "Parcel", price: 105 },
-      { label: "1 Liter", price: 200 },
-    ],
-  },
-  {
-    id: 34,
-    name: "Kiwi",
-    category: "Juice",
-    emoji: "🥝",
-    description: "Fresh kiwi juice with a vibrant green finish.",
-    badge: "Bright",
-    variants: [
-      { label: "500 ML", price: 80 },
-      { label: "Parcel", price: 165 },
-      { label: "1 Liter", price: 320 },
-    ],
-  },
-  {
-    id: 35,
-    name: "Lemon Fresh",
-    category: "Juice",
-    emoji: "🍋",
-    description: "Cool lemon refreshment with a crisp clean edge.",
-    badge: "Refreshing",
-    variants: [
-      { label: "500 ML", price: 30 },
-      { label: "Parcel", price: 65 },
-      { label: "1 Liter", price: 120 },
-    ],
-  },
-  {
-    id: 36,
-    name: "Lemon Soda Chilli",
-    category: "Juice",
-    emoji: "🌶️",
-    description: "Spiced lemonade with a zesty sparkling feel.",
-    badge: "Bold",
-    variants: [
-      { label: "500 ML", price: 40 },
-      { label: "Parcel", price: 85 },
-      { label: "1 Liter", price: 160 },
-    ],
-  },
-  {
-    id: 37,
-    name: "Lemon Grape",
-    category: "Juice",
-    emoji: "🍇",
-    description: "A sweet grape twist on lemon sparkle.",
-    badge: "Classic",
-    variants: [
-      { label: "500 ML", price: 50 },
-      { label: "Parcel", price: 105 },
-      { label: "1 Liter", price: 200 },
-    ],
-  },
-  {
-    id: 38,
-    name: "Lemon Mint",
-    category: "Juice",
-    emoji: "🍋",
-    description: "Minty lemon cooler for a brisk clean refresher.",
-    badge: "Cooling",
-    variants: [
-      { label: "500 ML", price: 50 },
-      { label: "Parcel", price: 105 },
-      { label: "1 Liter", price: 200 },
-    ],
-  },
-  {
-    id: 39,
-    name: "Lemon Pineapple",
-    category: "Juice",
-    emoji: "🍍",
-    description: "Sweet pineapple paired with crisp lemon freshness.",
-    badge: "Tropical",
-    variants: [
-      { label: "500 ML", price: 50 },
-      { label: "Parcel", price: 105 },
-      { label: "1 Liter", price: 200 },
-    ],
-  },
-  {
-    id: 40,
-    name: "Mango",
-    category: "Juice",
-    emoji: "🥭",
-    description: "Sweet mango juice with a mellow tropical body.",
-    badge: "Best Seller",
-    variants: [
-      { label: "500 ML", price: 60 },
-      { label: "Parcel", price: 125 },
-      { label: "1 Liter", price: 240 },
-    ],
-  },
-  {
-    id: 41,
-    name: "Mosambi",
-    category: "Juice",
-    emoji: "🍊",
-    description: "Light, clean mosambi with a bright citrus profile.",
-    badge: "Bright",
-    variants: [
-      { label: "500 ML", price: 60 },
-      { label: "Parcel", price: 125 },
-      { label: "1 Liter", price: 240 },
-    ],
-  },
-  {
-    id: 42,
-    name: "Muskmelon",
-    category: "Juice",
-    emoji: "🍈",
-    description: "Cool muskmelon juice with a soft mellow finish.",
-    badge: "Smooth",
-    variants: [
-      { label: "500 ML", price: 50 },
-      { label: "Parcel", price: 105 },
-      { label: "1 Liter", price: 200 },
-    ],
-  },
-  {
-    id: 43,
-    name: "Orange",
-    category: "Juice",
-    emoji: "🍊",
-    description: "Classic orange juice with a juicy, citrus punch.",
-    badge: "Classic",
-    variants: [
-      { label: "500 ML", price: 60 },
-      { label: "Parcel", price: 125 },
-      { label: "1 Liter", price: 240 },
-    ],
-  },
-  {
-    id: 44,
-    name: "Orange Lemon",
-    category: "Juice",
-    emoji: "🍋",
-    description: "A vibrant citrus blend with a zesty finish.",
-    badge: "Zesty",
-    variants: [
-      { label: "500 ML", price: 60 },
-      { label: "Parcel", price: 125 },
-      { label: "1 Liter", price: 240 },
-    ],
-  },
-  {
-    id: 45,
-    name: "Papaya",
-    category: "Juice",
-    emoji: "🥭",
-    description: "Papaya juice with a creamy and mellow taste.",
-    badge: "Soft",
-    variants: [
-      { label: "500 ML", price: 50 },
-      { label: "Parcel", price: 105 },
-      { label: "1 Liter", price: 200 },
-    ],
-  },
-  {
-    id: 46,
-    name: "Passion Fruit",
-    category: "Juice",
-    emoji: "🍍",
-    description: "Exotic passion fruit with a juicy tropical finish.",
-    badge: "Exotic",
-    variants: [
-      { label: "500 ML", price: 80 },
-      { label: "Parcel", price: 165 },
-      { label: "1 Liter", price: 320 },
-    ],
-  },
-  {
-    id: 47,
-    name: "Pineapple",
-    category: "Juice",
-    emoji: "🍍",
-    description: "Sweet pineapple juice made for a sunny refresh.",
-    badge: "Tropical",
-    variants: [
-      { label: "500 ML", price: 60 },
-      { label: "Parcel", price: 125 },
-      { label: "1 Liter", price: 240 },
-    ],
-  },
-  {
-    id: 48,
-    name: "Strawberry",
-    category: "Juice",
-    emoji: "🍓",
-    description: "Fresh strawberry juice with a bold fruit finish.",
-    badge: "Sweet",
-    variants: [
-      { label: "500 ML", price: 70 },
-      { label: "Parcel", price: 135 },
-      { label: "1 Liter", price: 260 },
-    ],
-  },
-  {
-    id: 49,
-    name: "Watermelon",
-    category: "Juice",
-    emoji: "🍉",
-    description: "Juicy and chilled watermelon refresher.",
-    badge: "Cool",
-    variants: [
-      { label: "500 ML", price: 50 },
-      { label: "Parcel", price: 105 },
-      { label: "1 Liter", price: 200 },
-    ],
-  },
-  {
-    id: 50,
-    name: "Beetroot",
-    category: "Fusion Shake",
-    emoji: "🫚",
-    description: "Earthy beetroot fusion with a sweet, smooth finish.",
-    badge: "Healthy",
-    variants: [
-      { label: "500 ML", price: 50 },
-      { label: "Parcel", price: 105 },
-      { label: "1 Liter", price: 200 },
-    ],
-  },
-  {
-    id: 51,
-    name: "ABC",
-    category: "Fusion Shake",
-    emoji: "🧃",
-    description: "A classic mixed fruit fusion for a full-bodied sip.",
-    badge: "Classic",
-    variants: [
-      { label: "500 ML", price: 90 },
-      { label: "Parcel", price: 180 },
-      { label: "1 Liter", price: 350 },
-    ],
-  },
-  {
-    id: 52,
-    name: "Cucumber Lemon",
-    category: "Fusion Shake",
-    emoji: "🥒",
-    description: "Fresh cucumber with refreshing lemon sparkle.",
-    badge: "Cooling",
-    variants: [
-      { label: "500 ML", price: 50 },
-      { label: "Parcel", price: 105 },
-      { label: "1 Liter", price: 200 },
-    ],
-  },
-  {
-    id: 53,
-    name: "Cucumber Pineapple",
-    category: "Fusion Shake",
-    emoji: "🥒",
-    description: "Cool cucumber fused with bright pineapple sweetness.",
-    badge: "Tropical",
-    variants: [
-      { label: "500 ML", price: 60 },
-      { label: "Parcel", price: 125 },
-      { label: "1 Liter", price: 250 },
-    ],
-  },
-  {
-    id: 54,
-    name: "Cucumber Orange",
-    category: "Fusion Shake",
-    emoji: "🍊",
-    description: "Crisp cucumber layered with citrus punch.",
-    badge: "Bright",
-    variants: [
-      { label: "500 ML", price: 70 },
-      { label: "Parcel", price: 135 },
-      { label: "1 Liter", price: 260 },
-    ],
-  },
-  {
-    id: 55,
-    name: "Avocado",
-    category: "Milk Shake",
-    emoji: "🥑",
-    description: "Creamy avocado shake with a softly rich finish.",
-    badge: "Smooth",
-    variants: [
-      { label: "500 ML", price: 60 },
-      { label: "Parcel", price: 125 },
-      { label: "1 Liter", price: 250 },
-    ],
-  },
-  {
-    id: 56,
-    name: "Avocado Honey",
-    category: "Milk Shake",
-    emoji: "🥑",
-    description: "Creamy avocado with gentle honey sweetness.",
-    badge: "Premium",
-    variants: [
-      { label: "500 ML", price: 70 },
-      { label: "Parcel", price: 135 },
-      { label: "1 Liter", price: 255 },
-    ],
-  },
-  {
-    id: 57,
-    name: "Badam",
-    category: "Milk Shake",
-    emoji: "🌰",
-    description: "Classic badam shake with a rich nutty profile.",
-    badge: "Nutty",
-    variants: [
-      { label: "500 ML", price: 50 },
-      { label: "Parcel", price: 105 },
-      { label: "1 Liter", price: 200 },
-    ],
-  },
-  {
-    id: 58,
-    name: "Banana",
-    category: "Milk Shake",
-    emoji: "🍌",
-    description: "Smooth banana shake with a mellow cream finish.",
-    badge: "Comfort",
-    variants: [
-      { label: "500 ML", price: 50 },
-      { label: "Parcel", price: 105 },
-      { label: "1 Liter", price: 200 },
-    ],
-  },
-  {
-    id: 59,
-    name: "Blueberry",
-    category: "Milk Shake",
-    emoji: "🫐",
-    description: "Blueberry-infused smooth shake with a fruity finish.",
-    badge: "Fruity",
-    variants: [
-      { label: "500 ML", price: 70 },
-      { label: "Parcel", price: 135 },
-      { label: "1 Liter", price: 260 },
-    ],
-  },
-  {
-    id: 60,
-    name: "Boost",
-    category: "Milk Shake",
-    emoji: "⚡",
-    description: "Energy-rich boost shake with strong creamy notes.",
-    badge: "Energy",
-    variants: [
-      { label: "500 ML", price: 60 },
-      { label: "Parcel", price: 125 },
-      { label: "1 Liter", price: 240 },
-    ],
-  },
-  {
-    id: 61,
-    name: "Brownie",
-    category: "Milk Shake",
-    emoji: "🍫",
-    description: "Chocolate brownie shake with a dense dessert vibe.",
-    badge: "Dessert",
-    variants: [
-      { label: "500 ML", price: 60 },
-      { label: "Parcel", price: 125 },
-      { label: "1 Liter", price: 240 },
-    ],
-  },
-  {
-    id: 62,
-    name: "Butterscotch",
-    category: "Milk Shake",
-    emoji: "🧈",
-    description: "Crisp buttery sweetness with a creamy finish.",
-    badge: "Classic",
-    variants: [
-      { label: "500 ML", price: 50 },
-      { label: "Parcel", price: 105 },
-      { label: "1 Liter", price: 200 },
-    ],
-  },
-  {
-    id: 63,
-    name: "Caramel",
-    category: "Milk Shake",
-    emoji: "🍯",
-    description: "Soft caramel shake with a sweet rich body.",
-    badge: "Sweet",
-    variants: [
-      { label: "500 ML", price: 60 },
-      { label: "Parcel", price: 125 },
-      { label: "1 Liter", price: 240 },
-    ],
-  },
-  {
-    id: 64,
-    name: "Cherry",
-    category: "Milk Shake",
-    emoji: "🍒",
-    description: "A fruity cherry sip with a smooth creamy profile.",
-    badge: "Fruit Lift",
-    variants: [
-      { label: "500 ML", price: 50 },
-      { label: "Parcel", price: 105 },
-      { label: "1 Liter", price: 200 },
-    ],
-  },
-  {
-    id: 65,
-    name: "Chickoo",
-    category: "Milk Shake",
-    emoji: "🥭",
-    description: "Classic chickoo shake with smooth fruit sweetness.",
-    badge: "Classic",
-    variants: [
-      { label: "500 ML", price: 60 },
-      { label: "Parcel", price: 125 },
-      { label: "1 Liter", price: 240 },
-    ],
-  },
-  {
-    id: 66,
-    name: "Chocolate",
-    category: "Milk Shake",
-    emoji: "🍫",
-    description: "A rich chocolate shake with a silky finish.",
-    badge: "Popular",
-    variants: [
-      { label: "500 ML", price: 50 },
-      { label: "Parcel", price: 105 },
-      { label: "1 Liter", price: 200 },
-    ],
-  },
-  {
-    id: 67,
-    name: "Coffee Blast",
-    category: "Milk Shake",
-    emoji: "☕",
-    description: "Coffee-forward creamy shake for a bold kick.",
-    badge: "Bold",
-    variants: [
-      { label: "500 ML", price: 60 },
-      { label: "Parcel", price: 125 },
-      { label: "1 Liter", price: 240 },
-    ],
-  },
-  {
-    id: 68,
-    name: "Cold Coffee",
-    category: "Milk Shake",
-    emoji: "☕",
-    description: "Chilled coffee blended into a smooth café-style sip.",
-    badge: "Cafe",
-    variants: [
-      { label: "500 ML", price: 60 },
-      { label: "Parcel", price: 125 },
-      { label: "1 Liter", price: 240 },
-    ],
-  },
-  {
-    id: 69,
-    name: "Custard Apple",
-    category: "Milk Shake",
-    emoji: "🍐",
-    description: "Creamy custard apple shake with a soft fruity body.",
-    badge: "Smooth",
-    variants: [
-      { label: "500 ML", price: 60 },
-      { label: "Parcel", price: 125 },
-      { label: "1 Liter", price: 240 },
-    ],
-  },
-  {
-    id: 70,
-    name: "Dark Fantasy",
-    category: "Milk Shake",
-    emoji: "🍫",
-    description: "Dark-themed chocolate indulgence with a silky finish.",
-    badge: "Rich",
-    variants: [
-      { label: "500 ML", price: 50 },
-      { label: "Parcel", price: 105 },
-      { label: "1 Liter", price: 200 },
-    ],
-  },
-  {
-    id: 71,
-    name: "Dates (Saudi)",
-    category: "Milk Shake",
-    emoji: "🌙",
-    description: "Sweet date shake with a premium dessert tone.",
-    badge: "Premium",
-    variants: [
-      { label: "500 ML", price: 50 },
-      { label: "Parcel", price: 105 },
-      { label: "1 Liter", price: 200 },
-    ],
-  },
-  {
-    id: 72,
-    name: "Dry Fruits",
-    category: "Milk Shake",
-    emoji: "🥜",
-    description: "Nut-rich dry fruit blend with a creamy finish.",
-    badge: "Special",
-    variants: [
-      { label: "500 ML", price: 80 },
-      { label: "Parcel", price: 165 },
-      { label: "1 Liter", price: 320 },
-    ],
-  },
-  {
-    id: 73,
-    name: "Grapes",
-    category: "Milk Shake",
-    emoji: "🍇",
-    description: "A juicy grape blend with smooth creamy texture.",
-    badge: "Fresh",
-    variants: [
-      { label: "500 ML", price: 50 },
-      { label: "Parcel", price: 105 },
-      { label: "1 Liter", price: 200 },
-    ],
-  },
-  {
-    id: 74,
-    name: "Guava",
-    category: "Milk Shake",
-    emoji: "🍈",
-    description: "Guava shake with mellow fruit sweetness.",
-    badge: "Classic",
-    variants: [
-      { label: "500 ML", price: 50 },
-      { label: "Parcel", price: 105 },
-      { label: "1 Liter", price: 200 },
-    ],
-  },
-  {
-    id: 75,
-    name: "Horlicks",
-    category: "Milk Shake",
-    emoji: "🥛",
-    description: "Comforting health shake with a creamy smooth body.",
-    badge: "Energy",
-    variants: [
-      { label: "500 ML", price: 60 },
-      { label: "Parcel", price: 125 },
-      { label: "1 Liter", price: 240 },
-    ],
-  },
-  {
-    id: 76,
-    name: "Ice Apple",
-    category: "Milk Shake",
-    emoji: "🥭",
-    description: "Naturally sweet ice apple shake with a fresh finish.",
-    badge: "Cool",
-    variants: [
-      { label: "500 ML", price: 60 },
-      { label: "Parcel", price: 125 },
-      { label: "1 Liter", price: 240 },
-    ],
-  },
-  {
-    id: 77,
-    name: "Malai Kulfi",
-    category: "Milk Shake",
-    emoji: "🍨",
-    description: "A rich kulfi-inspired creamy shake.",
-    badge: "Premium",
-    variants: [
-      { label: "500 ML", price: 80 },
-      { label: "Parcel", price: 165 },
-      { label: "1 Liter", price: 320 },
-    ],
-  },
-  {
-    id: 78,
-    name: "Lotus",
-    category: "Milk Shake",
-    emoji: "🌸",
-    description: "Lotus-flavoured shake with a luxurious creamy body.",
+    description: "For creamy parcel-style blends and premium take-home servings.",
     badge: "Signature",
-    variants: [
-      { label: "500 ML", price: 60 },
-      { label: "Parcel", price: 125 },
-      { label: "1 Liter", price: 240 },
+    items: [
+      ["Apple Chickoo", [70, 135, 255]],
+      ["Apple Papaya", [70, 135, 255]],
+      ["Badam Pista", [70, 135, 255]],
+      ["Chickoo Chocolate", [70, 135, 255]],
+      ["Chickoo Sharjah", [70, 135, 255]],
+      ["Chickoo Custard Apple", [70, 135, 255]],
+      ["Chocolate Caramel", [70, 135, 255]],
+      ["Chocolate Oreo", [70, 135, 255]],
+      ["Chocolate Sharjah", [70, 135, 255]],
+      ["Grape Pineapple", [70, 135, 255]],
+      ["Kitkat Oreo", [70, 135, 255]],
+      ["Oreo Caramel", [70, 135, 255]],
+      ["Oreo Sharjah", [70, 135, 255]],
+      ["Papaya Chickoo", [70, 135, 255]],
+      ["Papaya Mango", [70, 135, 255]],
+      ["Papaya Sharjah", [70, 135, 255]],
+      ["Saudi Caramel", [70, 135, 255]],
+      ["Sharjah Saudi", [70, 135, 255]],
+      ["Tender Butter", [90, 175, 335]],
+      ["Tender Cashew", [100, 205, 400]],
+      ["Tender Chickoo", [90, 175, 335]],
+      ["Tender Dates", [90, 175, 335]],
+      ["Tender Mango", [90, 175, 335]],
+      ["Tender Caramel", [90, 175, 335]],
+      ["Tender Chocolate", [90, 175, 335]],
     ],
   },
   {
-    id: 79,
-    name: "Mixed Fruit",
     category: "Milk Shake",
-    emoji: "🍍",
-    description: "A balanced mixed fruit shake with plenty of lift.",
-    badge: "Tropical",
-    variants: [
-      { label: "500 ML", price: 70 },
-      { label: "Parcel", price: 135 },
-      { label: "1 Liter", price: 260 },
-    ],
-  },
-  {
-    id: 80,
-    name: "Oreo",
-    category: "Milk Shake",
-    emoji: "🍪",
-    description: "Smooth Oreo shake with a creamy biscuit finish.",
-    badge: "Favourite",
-    variants: [
-      { label: "500 ML", price: 50 },
-      { label: "Parcel", price: 105 },
-      { label: "1 Liter", price: 200 },
-    ],
-  },
-  {
-    id: 81,
-    name: "Peanut Butter",
-    category: "Milk Shake",
-    emoji: "🥜",
-    description: "A rich peanut butter shake with a nutty finish.",
-    badge: "Nutty",
-    variants: [
-      { label: "500 ML", price: 80 },
-      { label: "Parcel", price: 165 },
-      { label: "1 Liter", price: 320 },
-    ],
-  },
-  {
-    id: 82,
-    name: "Pomegranate (Anar)",
-    category: "Milk Shake",
-    emoji: "🍎",
-    description: "Pomegranate-flavored shake with a fruity sweet edge.",
-    badge: "Fruitful",
-    variants: [
-      { label: "500 ML", price: 70 },
-      { label: "Parcel", price: 135 },
-      { label: "1 Liter", price: 260 },
-    ],
-  },
-  {
-    id: 83,
-    name: "Dryfruits Special",
-    category: "Milk Shake",
-    emoji: "🥜",
-    description: "A more indulgent dry-fruit premium blend.",
-    badge: "Luxury",
-    variants: [
-      { label: "500 ML", price: 100 },
-      { label: "Parcel", price: 205 },
-      { label: "1 Liter", price: 400 },
-    ],
-  },
-  {
-    id: 84,
-    name: "Vanila",
-    category: "Milk Shake",
-    emoji: "🍦",
-    description: "Vanilla cream shake with a clean silky finish.",
-    badge: "Classic",
-    variants: [
-      { label: "500 ML", price: 50 },
-      { label: "Parcel", price: 105 },
-      { label: "1 Liter", price: 200 },
-    ],
-  },
-  {
-    id: 85,
-    name: "Tender Coconut",
-    category: "Milk Shake",
-    emoji: "🥥",
-    description: "Creamy coconut shake with a soft tropical taste.",
-    badge: "Tropical",
-    variants: [
-      { label: "500 ML", price: 70 },
-      { label: "Parcel", price: 145 },
-      { label: "1 Liter", price: 280 },
-    ],
-  },
-  {
-    id: 86,
-    name: "Black Currant",
-    category: "Ice Cream",
-    emoji: "🫐",
-    description: "Deep black currant ice cream with a fruity finish.",
-    badge: "Ice Cream",
-    variants: [{ label: "Cup", price: 100 }],
-  },
-  {
-    id: 87,
-    name: "Butterscotch",
-    category: "Ice Cream",
-    emoji: "🧈",
-    description: "Classic butterscotch scoop with caramel richness.",
-    badge: "Ice Cream",
-    variants: [{ label: "Cup", price: 100 }],
-  },
-  {
-    id: 88,
-    name: "Choco Chips",
-    category: "Ice Cream",
-    emoji: "🍫",
-    description: "Chocolate base packed with crunchy chip texture.",
-    badge: "Ice Cream",
-    variants: [{ label: "Cup", price: 100 }],
-  },
-  {
-    id: 89,
-    name: "Chocolate",
-    category: "Ice Cream",
-    emoji: "🍫",
-    description: "Classic chocolate ice cream with a rich smooth body.",
-    badge: "Ice Cream",
-    variants: [{ label: "Cup", price: 100 }],
-  },
-  {
-    id: 90,
-    name: "English Delight",
-    category: "Ice Cream",
-    emoji: "🍦",
-    description: "A creamy, familiar dessert-style scoop.",
-    badge: "Ice Cream",
-    variants: [{ label: "Cup", price: 100 }],
-  },
-  {
-    id: 91,
-    name: "Fig Dates And Honey",
-    category: "Ice Cream",
-    emoji: "🍯",
-    description: "Soft fig, date, and honey notes in a creamy scoop.",
-    badge: "Ice Cream",
-    variants: [{ label: "Cup", price: 100 }],
-  },
-  {
-    id: 92,
-    name: "Mango",
-    category: "Ice Cream",
     emoji: "🥭",
-    description: "Tropical mango ice cream for a sunny scoop.",
-    badge: "Ice Cream",
-    variants: [{ label: "Cup", price: 100 }],
+    description: "Creamy milkshakes with a rich, blended feel.",
+    badge: "Creamy",
+    items: [
+      ["Apple", [60, 125, 250]],
+      ["Avocado", [70, 135, 255]],
+      ["Avocado Honey", [90, 185, 360]],
+      ["Badam", [50, 105, 200]],
+      ["Banana", [50, 105, 200]],
+      ["Blueberry", [70, 135, 260]],
+      ["Boost", [60, 125, 240]],
+      ["Brownie", [60, 125, 240]],
+      ["Butterscotch", [50, 105, 200]],
+      ["Caramel", [60, 125, 240]],
+      ["Cherry", [50, 105, 200]],
+      ["Chickoo", [60, 125, 240]],
+      ["Chocolate", [50, 105, 200]],
+      ["Coffee Blast", [60, 125, 240]],
+      ["Cold Coffee", [60, 125, 240]],
+      ["Custard Apple", [60, 125, 240]],
+      ["Dark Fantasy", [50, 105, 200]],
+      ["Dates (Saudi)", [50, 105, 200]],
+      ["Dragon Fruit", [60, 125, 250]],
+      ["Dry Fruits", [80, 165, 320]],
+      ["Grapes", [50, 105, 200]],
+      ["Guava", [50, 105, 200]],
+      ["Horlicks", [60, 125, 240]],
+      ["Ice Apple", [60, 125, 240]],
+      ["Malai Kulfi", [80, 165, 320]],
+      ["Kiwi", [90, 185, 360]],
+      ["Lotus", [60, 125, 240]],
+      ["Mango", [60, 125, 240]],
+      ["Mixed Fruit", [70, 135, 260]],
+      ["Muskmelon", [50, 105, 200]],
+      ["Oreo", [50, 105, 200]],
+      ["Papaya", [50, 105, 200]],
+      ["Peanut Butter", [80, 165, 320]],
+      ["Pineapple", [50, 105, 200]],
+      ["Pista", [50, 105, 200]],
+      ["Pomegranate (Anar)", [70, 135, 260]],
+      ["Strawberry", [60, 125, 240]],
+      ["Dry Fruits Special", [100, 205, 400]],
+      ["Vanila", [50, 105, 200]],
+      ["Tender Coconut", [70, 145, 280]],
+    ],
   },
   {
-    id: 93,
-    name: "Mocha",
-    category: "Ice Cream",
-    emoji: "☕",
-    description: "Coffee and chocolate tones in a smooth scoop.",
-    badge: "Ice Cream",
-    variants: [{ label: "Cup", price: 100 }],
+    category: "Juice",
+    emoji: "🍊",
+    description: "Fresh juices squeezed for a clean, cooling sip.",
+    badge: "Fresh",
+    items: [
+      ["Anar", [70, 135, 260]],
+      ["Apple", [70, 135, 260]],
+      ["Carrot", [50, 105, 200]],
+      ["Cucumber", [40, 85, 160]],
+      ["Dragon Fruit", [60, 125, 250]],
+      ["Gooseberry", [70, 135, 260]],
+      ["Grape", [50, 105, 200]],
+      ["Guava Lemon", [50, 105, 200]],
+      ["Kiwi", [80, 165, 320]],
+      ["Lemon Fresh", [30, 65, 120]],
+      ["Lemon Grape", [50, 105, 200]],
+      ["Lemon Mint", [50, 105, 200]],
+      ["Lemon Pineapple", [50, 105, 200]],
+      ["Mango", [60, 125, 240]],
+      ["Mosambi", [60, 125, 240]],
+      ["Muskmelon", [50, 105, 200]],
+      ["Orange", [60, 125, 240]],
+      ["Orange Lemon", [60, 125, 240]],
+      ["Papaya", [50, 105, 200]],
+      ["Passion Fruit", [80, 165, 320]],
+      ["Pineapple", [60, 125, 240]],
+      ["Strawberry", [70, 135, 260]],
+      ["Watermelon", [50, 105, 200]],
+      ["Beetroot", [50, 105, 200]],
+      ["ABC", [90, 180, 350]],
+      ["Cucumber Lemon", [50, 105, 200]],
+      ["Cucumber Pineapple", [60, 125, 250]],
+      ["Cucumber Orange", [70, 135, 260]],
+    ],
   },
   {
-    id: 94,
-    name: "Pineapple",
     category: "Ice Cream",
-    emoji: "🍍",
-    description: "Tropical pineapple scoop with a light sweet finish.",
-    badge: "Ice Cream",
-    variants: [{ label: "Cup", price: 100 }],
+    emoji: "🍨",
+    description: "Classic scoops, frozen favorites, and creamy coolers.",
+    badge: "Frozen",
+    items: [
+      ["Black Currant", [100]],
+      ["Butterscotch", [100]],
+      ["Choco Chips", [100]],
+      ["Chocolate", [100]],
+      ["English Delight", [100]],
+      ["Fig Dates And Honey", [100]],
+      ["Mango", [100]],
+      ["Mocha", [100]],
+      ["Pineapple", [100]],
+      ["Pista", [100]],
+      ["Red Velvet", [100]],
+      ["Strawberry", [100]],
+      ["Vancho", [100]],
+      ["Vanila", [100]],
+    ],
   },
   {
-    id: 95,
-    name: "Pista",
-    category: "Ice Cream",
-    emoji: "🌰",
-    description: "A nutty pista scoop with a creamy finish.",
-    badge: "Ice Cream",
-    variants: [{ label: "Cup", price: 100 }],
+    category: "Mastani",
+    emoji: "🍦",
+    description: "Thick, indulgent mastani pours and galaxy blends.",
+    badge: "Indulgent",
+    items: [
+      ["Banana Mastani", [110]],
+      ["Mango Mastani", [110]],
+      ["Papaya Mastani", [110]],
+      ["Pineapple Mastani", [110]],
+      ["Avocado Galaxy", [110]],
+      ["Banana Galaxy", [110]],
+      ["Caramel Galaxy", [110]],
+      ["Chickoo Galaxy", [110]],
+      ["Grape Galaxy", [110]],
+      ["Mango Galaxy", [110]],
+      ["Oreo Galaxy", [110]],
+      ["Papaya Galaxy", [110]],
+      ["Pineapple Galaxy", [110]],
+      ["Saudi Galaxy", [110]],
+      ["Tender Galaxy", [110]],
+    ],
   },
   {
-    id: 96,
-    name: "Red Velvet",
-    category: "Ice Cream",
+    category: "Mojito",
+    emoji: "🌿",
+    description: "Minty, sparkling mojitos with lively fruit notes.",
+    badge: "Cool",
+    items: [
+      ["Blue Curacao", [80]],
+      ["Blueberry", [80]],
+      ["Green Apple", [80]],
+      ["Green Seed", [80]],
+      ["Hot Gooseberry (spicy)", [80]],
+      ["Kiwi", [80]],
+      ["Litchi", [80]],
+      ["Mango Slice", [80]],
+      ["Mexican", [80]],
+      ["Mint", [80]],
+      ["Red Flame", [80]],
+      ["Red Freeze", [80]],
+      ["Valencia (Orange)", [80]],
+      ["Virgin", [60]],
+      ["Wineyard (Grape)", [80]],
+      ["Yellow Flower (Pineapple)", [80]],
+    ],
+  },
+  {
+    category: "Mocktail",
+    emoji: "🍓",
+    description: "Fruity mocktails with a lively, refreshing finish.",
+    badge: "Sparkling",
+    items: [
+      ["Carrot Pineapple", [70, 135, 255]],
+      ["Grape Pineapple", [70, 135, 255]],
+      ["Mosambi Orange", [70, 135, 255]],
+      ["Papaya Pineapple", [70, 135, 255]],
+      ["Papaya Carrot", [70, 135, 255]],
+      ["Shamam Mango", [70, 135, 255]],
+      ["Shamam Papaya", [70, 135, 255]],
+      ["Water Melon Carrot", [70, 135, 255]],
+    ],
+  },
+  {
+    category: "Fruit Soda",
+    emoji: "🧃",
+    description: "Fruit sodas that are crisp, fizzy, and refreshing.",
+    badge: "Bubbly",
+    items: [
+      ["Anar Soda", [50]],
+      ["Apple Soda", [50]],
+      ["Carrot Soda", [50]],
+      ["Grape Soda", [50]],
+      ["Guava Soda", [50]],
+      ["Mango Soda", [50]],
+      ["Mosambi Soda", [50]],
+      ["Orange Soda", [50]],
+      ["Passion Fruit Soda", [60]],
+      ["Pineapple Soda", [50]],
+      ["Shaman Soda", [50]],
+      ["Hawaiian Fresh Fruit Salad", [120]],
+    ],
+  },
+  {
+    category: "Falooda",
+    emoji: "🍹",
+    description: "Layered falooda cups and dessert-style pours.",
+    badge: "Layered",
+    items: [
+      ["Cake Falooda", [175]],
+      ["Chocolate Falooda", [170]],
+      ["Dry Fruits Falooda", [200]],
+      ["Gulab Jamun Falooda", [175]],
+      ["Mango Falooda", [160]],
+      ["Royal Falooda", [160]],
+      ["Royal Falooda Special", [190]],
+      ["Strawberry Falooda", [160]],
+      ["Pineapple Falooda", [160]],
+      ["Fruit Punch Falooda", [170]],
+      ["Kulfi Falooda", [170]],
+    ],
+  },
+  {
+    category: "Ice Cream Shakes",
+    emoji: "🍫",
+    description: "Rich shakes layered with cookie and ice cream notes.",
+    badge: "Rich",
+    items: [
+      ["Chocolate Brownie Magic", [150]],
+      ["Caramel Mocha Sundae", [150]],
+      ["Double Chocolate Cookie Fiesta", [150]],
+      ["Dry Fruits with Cake", [150]],
+      ["Wafer Crown with Cookie", [150]],
+      ["Dark Vanilla with Coffee Fills", [150]],
+      ["Fruit Salad with Ice Cream", [90]],
+    ],
+  },
+  {
+    category: "Desserts",
     emoji: "🍰",
-    description: "Smooth red velvet-inspired cream scoop.",
-    badge: "Ice Cream",
-    variants: [{ label: "Cup", price: 100 }],
+    description: "Sweet desserts and sizzlers to end on a tasty note.",
+    badge: "Sweet",
+    items: [
+      ["Fruit Salad", [70]],
+      ["Sizzling Brownie", [140]],
+      ["Chocolate Sizzler", [180]],
+      ["Strawberry Sizzler", [180]],
+      ["Single Scoop", [50]],
+      ["Double Scoop", [80]],
+    ],
   },
-];
+] as const;
+
+const menuItems: MenuItem[] = menuSectionCatalog.flatMap((section, sectionIndex) =>
+  section.items.map(([name, prices], itemIndex) => ({
+    id: sectionIndex * 100 + itemIndex + 1,
+    name,
+    category: section.category,
+    emoji: section.emoji,
+    description: section.description,
+    badge: section.badge,
+    sizes: prices.map((price, sizeIndex) => ({
+      label: ["500 ML", "1 Liter", "Parcel"][sizeIndex] ?? `Size ${sizeIndex + 1}`,
+      price,
+    })),
+  })),
+);
 
 const branches: Branch[] = [
   {
@@ -1254,7 +335,7 @@ const branches: Branch[] = [
 ];
 
 const categories = ["All", ...new Set(menuItems.map((item) => item.category))];
-const bestSellerIds = [40, 66, 80, 92];
+const bestSellerIds = [1, 5, 12];
 
 const getDistanceKm = (lat1: number, lng1: number, lat2: number, lng2: number) => {
   const toRad = (value: number) => (value * Math.PI) / 180;
@@ -1272,6 +353,9 @@ export default function Home() {
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [searchTerm, setSearchTerm] = useState("");
   const [cart, setCart] = useState<Record<string, number>>({});
+  const [selectedSizeByItem, setSelectedSizeByItem] = useState<Record<number, string>>(() =>
+    Object.fromEntries(menuItems.map((item) => [item.id, item.sizes[0]?.label ?? ""])),
+  );
   const [specialInstructions, setSpecialInstructions] = useState("");
   const [branchId, setBranchId] = useState(branches[0].id);
   const [suggestedBranchId, setSuggestedBranchId] = useState<string | null>(null);
@@ -1325,36 +409,22 @@ export default function Home() {
     );
   }, []);
 
-  const cartItems = useMemo(() => {
-    const items: Array<{
-      id: number;
-      name: string;
-      category: string;
-      emoji: string;
-      description: string;
-      badge: string;
-      variantLabel: string;
-      price: number;
-      quantity: number;
-    }> = [];
-
-    menuItems.forEach((item) => {
-      item.variants.forEach((variant) => {
-        const quantity = cart[`${item.id}:${variant.label}`] ?? 0;
-
-        if (quantity > 0) {
-          items.push({
-            ...item,
-            variantLabel: variant.label,
-            price: variant.price,
-            quantity,
-          });
-        }
-      });
-    });
-
-    return items;
-  }, [cart]);
+  const cartItems = useMemo(
+    () =>
+      menuItems.flatMap((item) =>
+        item.sizes
+          .filter((size) => (cart[`${item.id}:${size.label}`] ?? 0) > 0)
+          .map((size) => ({
+            id: item.id,
+            name: item.name,
+            category: item.category,
+            sizeLabel: size.label,
+            price: size.price,
+            quantity: cart[`${item.id}:${size.label}`] ?? 0,
+          })),
+      ),
+    [cart],
+  );
 
   const filteredItems = useMemo(() => {
     const normalizedTerm = searchTerm.trim().toLowerCase();
@@ -1365,8 +435,7 @@ export default function Home() {
       const matchesSearch =
         normalizedTerm.length === 0 ||
         item.name.toLowerCase().includes(normalizedTerm) ||
-        item.description.toLowerCase().includes(normalizedTerm) ||
-        item.variants.some((variant) => variant.label.toLowerCase().includes(normalizedTerm));
+        item.description.toLowerCase().includes(normalizedTerm);
 
       return matchesCategory && matchesSearch;
     });
@@ -1379,12 +448,24 @@ export default function Home() {
 
   const selectedBranch = branches.find((branch) => branch.id === branchId) ?? branches[0];
 
-  const getVariantQuantity = (itemId: number, variantLabel: string) =>
-    cart[`${itemId}:${variantLabel}`] ?? 0;
+  const getCartKey = (itemId: number, sizeLabel: string) => `${itemId}:${sizeLabel}`;
 
-  const updateVariantQuantity = (itemId: number, variantLabel: string, delta: number) => {
+  const getItemQuantity = (itemId: number) =>
+    menuItems
+      .find((item) => item.id === itemId)
+      ?.sizes.reduce((sum, size) => sum + (cart[getCartKey(itemId, size.label)] ?? 0), 0) ?? 0;
+
+  const addToCart = (itemId: number, sizeLabel: string) => {
+    setCart((current) => ({
+      ...current,
+      [getCartKey(itemId, sizeLabel)]: (current[getCartKey(itemId, sizeLabel)] ?? 0) + 1,
+    }));
+  };
+
+  const updateQuantity = (itemId: number, sizeLabel: string, delta: number) => {
+    const key = getCartKey(itemId, sizeLabel);
+
     setCart((current) => {
-      const key = `${itemId}:${variantLabel}`;
       const nextQty = (current[key] ?? 0) + delta;
 
       if (nextQty <= 0) {
@@ -1396,9 +477,10 @@ export default function Home() {
     });
   };
 
-  const removeItem = (itemId: number, variantLabel: string) => {
+  const removeItem = (itemId: number, sizeLabel: string) => {
+    const key = getCartKey(itemId, sizeLabel);
+
     setCart((current) => {
-      const key = `${itemId}:${variantLabel}`;
       const { [key]: _, ...rest } = current;
       return rest;
     });
@@ -1410,7 +492,7 @@ export default function Home() {
     }
 
     const orderLines = cartItems.map(
-      (item) => `${item.quantity} × ${item.name} (${item.variantLabel}) ₹${item.price * item.quantity}`,
+      (item) => `${item.quantity} × ${item.name} (${item.sizeLabel}) ₹${item.price * item.quantity}`,
     );
 
     const message = [
@@ -1484,7 +566,7 @@ export default function Home() {
                   Fresh blends made for the fastest pickup orders.
                 </h1>
                 <p className="max-w-xl text-lg text-zinc-300">
-                  Browse the full updated PDF menu, build your order with variant pricing, and send it directly to the selected PJ Ours outlet.
+                  Browse the handcrafted menu, build your cart in seconds, and send a formatted WhatsApp order straight to your nearest PJ Ours branch.
                 </p>
               </div>
               <div className="flex flex-col gap-3 sm:flex-row">
@@ -1503,16 +585,16 @@ export default function Home() {
               </div>
               <div className="grid gap-3 sm:grid-cols-3">
                 <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
-                  <p className="text-2xl font-bold text-amber-300">96</p>
-                  <p className="text-sm text-zinc-300">Menu items updated</p>
-                </div>
-                <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
-                  <p className="text-2xl font-bold text-emerald-300">2</p>
+                  <p className="text-2xl font-bold text-amber-300">2</p>
                   <p className="text-sm text-zinc-300">Outlet branches</p>
                 </div>
                 <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
-                  <p className="text-2xl font-bold text-rose-300">Instant</p>
-                  <p className="text-sm text-zinc-300">WhatsApp checkout</p>
+                  <p className="text-2xl font-bold text-emerald-300">2 min</p>
+                  <p className="text-sm text-zinc-300">Quick checkout flow</p>
+                </div>
+                <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+                  <p className="text-2xl font-bold text-rose-300">24/7</p>
+                  <p className="text-sm text-zinc-300">Online ordering vibe</p>
                 </div>
               </div>
             </motion.div>
@@ -1535,16 +617,16 @@ export default function Home() {
                 <div className="col-span-2 rounded-[1.5rem] bg-black/30 p-6">
                   <div className="mb-4 flex items-center justify-between">
                     <span className="rounded-full bg-white/10 px-3 py-1 text-xs text-white">Best sellers</span>
-                    <span className="text-xs text-zinc-300">From the new menu</span>
+                    <span className="text-xs text-zinc-300">Updated daily</span>
                   </div>
-                  <div className="grid gap-3 sm:grid-cols-4">
+                  <div className="grid gap-3 sm:grid-cols-3">
                     {menuItems
                       .filter((item) => bestSellerIds.includes(item.id))
                       .map((item) => (
                         <div key={item.id} className="rounded-2xl bg-white/5 p-3 text-center">
                           <div className="text-3xl">{item.emoji}</div>
-                          <p className="mt-2 text-sm font-semibold">{item.name}</p>
-                          <p className="text-xs text-zinc-300">₹{item.variants[0]?.price}</p>
+                          <p className="mt-2 font-semibold">{item.name}</p>
+                          <p className="text-sm text-zinc-300">₹{item.sizes[0]?.price ?? 0}</p>
                         </div>
                       ))}
                   </div>
@@ -1561,11 +643,11 @@ export default function Home() {
             <p className="text-sm font-semibold uppercase tracking-[0.4em] text-amber-300">Interactive Menu</p>
             <h2 className="mt-2 text-3xl font-bold">Build your pickup order</h2>
           </div>
-          <div className="flex w-full max-w-2xl flex-col gap-3 md:flex-row">
+          <div className="flex w-full max-w-xl flex-col gap-3 md:flex-row">
             <input
               value={searchTerm}
               onChange={(event) => setSearchTerm(event.target.value)}
-              placeholder="Search drinks, shakes, or ice cream"
+              placeholder="Search drinks or shakes"
               className="w-full rounded-full border border-white/10 bg-white/5 px-4 py-3 text-white outline-none placeholder:text-zinc-400"
             />
             <div className="flex flex-wrap gap-2">
@@ -1587,59 +669,74 @@ export default function Home() {
         </div>
 
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-          {filteredItems.map((item) => (
-            <motion.article
-              key={item.id}
-              layout
-              className="overflow-hidden rounded-[1.6rem] border border-white/10 bg-white/5"
-            >
-              <div className="p-4">
-                <div className="flex items-center justify-between">
-                  <span className="rounded-full bg-amber-400/20 px-3 py-1 text-xs font-semibold text-amber-200">
-                    {item.badge}
-                  </span>
-                  <span className="text-4xl">{item.emoji}</span>
-                </div>
-                <div className="mt-4 space-y-2">
-                  <h3 className="text-xl font-semibold">{item.name}</h3>
-                  <p className="text-sm text-zinc-300">{item.description}</p>
-                  <p className="text-xs uppercase tracking-[0.3em] text-zinc-400">{item.category}</p>
-                </div>
-              </div>
-              <div className="mt-4 space-y-3 border-t border-white/10 p-4">
-                {item.variants.map((variant) => {
-                  const quantity = getVariantQuantity(item.id, variant.label);
+          {filteredItems.map((item) => {
+            const selectedSizeLabel = selectedSizeByItem[item.id] ?? item.sizes[0]?.label ?? "";
+            const selectedSize = item.sizes.find((size) => size.label === selectedSizeLabel) ?? item.sizes[0];
 
-                  return (
-                    <div
-                      key={`${item.id}-${variant.label}`}
-                      className="flex items-center justify-between gap-3 rounded-2xl bg-black/20 px-3 py-2"
+            return (
+              <motion.article
+                key={item.id}
+                layout
+                className="overflow-hidden rounded-[1.6rem] border border-white/10 bg-white/5"
+              >
+                <div className="p-4">
+                  <div className="flex items-center justify-between">
+                    <span className="rounded-full bg-amber-400/20 px-3 py-1 text-xs font-semibold text-amber-200">
+                      {item.badge}
+                    </span>
+                    <span className="text-4xl">{item.emoji}</span>
+                  </div>
+                  <div className="mt-4 space-y-2">
+                    <h3 className="text-xl font-semibold">{item.name}</h3>
+                    <p className="text-sm text-zinc-300">{item.description}</p>
+                    <p className="text-lg font-bold text-amber-300">₹{selectedSize?.price ?? 0}</p>
+                  </div>
+
+                  <div className="mt-4 grid grid-cols-2 gap-2">
+                    {item.sizes.map((size) => (
+                      <button
+                        key={`${item.id}-${size.label}`}
+                        onClick={() => setSelectedSizeByItem((current) => ({ ...current, [item.id]: size.label }))}
+                        className={`rounded-xl border px-2 py-2 text-left text-xs transition ${
+                          selectedSizeLabel === size.label
+                            ? "border-amber-300 bg-amber-400/15 text-amber-100"
+                            : "border-white/10 bg-black/20 text-zinc-200"
+                        }`}
+                      >
+                        <div className="font-semibold">{size.label}</div>
+                        <div className="text-[11px] text-zinc-300">₹{size.price}</div>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <div className="mt-4 flex items-center justify-between gap-2 border-t border-white/10 p-4">
+                  <div className="flex items-center gap-2 rounded-full bg-black/20 px-2 py-1">
+                    <button
+                      onClick={() => updateQuantity(item.id, selectedSizeLabel, -1)}
+                      className="h-8 w-8 rounded-full bg-white/10 text-lg text-white"
                     >
-                      <div>
-                        <p className="text-sm font-semibold text-white">{variant.label}</p>
-                        <p className="text-xs text-amber-200">₹{variant.price}</p>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <button
-                          onClick={() => updateVariantQuantity(item.id, variant.label, -1)}
-                          className="h-8 w-8 rounded-full bg-white/10 text-lg text-white"
-                        >
-                          −
-                        </button>
-                        <span className="min-w-6 text-center text-sm font-semibold">{quantity}</span>
-                        <button
-                          onClick={() => updateVariantQuantity(item.id, variant.label, 1)}
-                          className="h-8 w-8 rounded-full bg-white/10 text-lg text-white"
-                        >
-                          +
-                        </button>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </motion.article>
-          ))}
+                      −
+                    </button>
+                    <span className="min-w-6 text-center text-sm font-semibold">
+                      {getItemQuantity(item.id)}
+                    </span>
+                    <button
+                      onClick={() => updateQuantity(item.id, selectedSizeLabel, 1)}
+                      className="h-8 w-8 rounded-full bg-white/10 text-lg text-white"
+                    >
+                      +
+                    </button>
+                  </div>
+                  <button
+                    onClick={() => addToCart(item.id, selectedSizeLabel)}
+                    className="rounded-full bg-emerald-400 px-4 py-2 text-sm font-semibold text-black transition hover:bg-emerald-300"
+                  >
+                    Add to Cart
+                  </button>
+                </div>
+              </motion.article>
+            );
+          })}
         </div>
       </section>
 
@@ -1662,14 +759,16 @@ export default function Home() {
               </div>
             ) : (
               cartItems.map((item) => (
-                <div key={`${item.id}-${item.variantLabel}`} className="rounded-2xl bg-black/20 p-4">
+                <div key={`${item.id}-${item.sizeLabel}`} className="rounded-2xl bg-black/20 p-4">
                   <div className="flex items-start justify-between gap-4">
                     <div>
                       <p className="font-semibold">{item.name}</p>
-                      <p className="text-sm text-zinc-300">{item.variantLabel} • ₹{item.price} each</p>
+                      <p className="text-sm text-zinc-300">
+                        {item.sizeLabel} • ₹{item.price} each
+                      </p>
                     </div>
                     <button
-                      onClick={() => removeItem(item.id, item.variantLabel)}
+                      onClick={() => removeItem(item.id, item.sizeLabel)}
                       className="text-sm text-rose-300"
                     >
                       Remove
@@ -1677,14 +776,14 @@ export default function Home() {
                   </div>
                   <div className="mt-3 flex items-center gap-2">
                     <button
-                      onClick={() => updateVariantQuantity(item.id, item.variantLabel, -1)}
+                      onClick={() => updateQuantity(item.id, item.sizeLabel, -1)}
                       className="h-8 w-8 rounded-full bg-white/10 text-lg"
                     >
                       −
                     </button>
                     <span className="min-w-8 text-center">{item.quantity}</span>
                     <button
-                      onClick={() => updateVariantQuantity(item.id, item.variantLabel, 1)}
+                      onClick={() => updateQuantity(item.id, item.sizeLabel, 1)}
                       className="h-8 w-8 rounded-full bg-white/10 text-lg"
                     >
                       +
@@ -1718,19 +817,19 @@ export default function Home() {
         </div>
 
         <div className="rounded-[1.6rem] border border-white/10 bg-gradient-to-br from-emerald-500/10 to-cyan-500/10 p-4 sm:p-6">
-          <p className="text-sm font-semibold uppercase tracking-[0.3em] text-emerald-300">Menu Highlights</p>
+          <p className="text-sm font-semibold uppercase tracking-[0.3em] text-emerald-300">Offers & Combos</p>
           <div className="mt-4 space-y-3">
             <div className="rounded-2xl bg-white/5 p-4">
-              <p className="font-semibold">Updated PDF catalog</p>
-              <p className="text-sm text-zinc-300">Every listed drink and ice-cream item from the two-page menu is now present.</p>
+              <p className="font-semibold">Combo Saver</p>
+              <p className="text-sm text-zinc-300">Any two shakes + free mint cooler.</p>
             </div>
             <div className="rounded-2xl bg-white/5 p-4">
-              <p className="font-semibold">Variant pricing</p>
-              <p className="text-sm text-zinc-300">Choose quantity per size variant directly from the catalog cards.</p>
+              <p className="font-semibold">Weekend Treat</p>
+              <p className="text-sm text-zinc-300">Buy 3 Mojitos and get one ice cream add-on.</p>
             </div>
             <div className="rounded-2xl bg-white/5 p-4">
-              <p className="font-semibold">Fast pickup flow</p>
-              <p className="text-sm text-zinc-300">The cart is converted into a formatted WhatsApp order for your selected branch.</p>
+              <p className="font-semibold">Pickup Advantage</p>
+              <p className="text-sm text-zinc-300">Place an order and sync it directly with the selected branch.</p>
             </div>
           </div>
         </div>
