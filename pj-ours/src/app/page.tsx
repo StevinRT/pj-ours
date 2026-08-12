@@ -146,7 +146,7 @@ const menuSectionCatalog = [
     ],
   },
   {
-    category: "Ice Cream",
+    category: "Ice Cream Shakes",
     emoji: "🍨",
     description: "Classic scoops, frozen favorites, and creamy coolers.",
     badge: "Frozen",
@@ -270,7 +270,7 @@ const menuSectionCatalog = [
     ],
   },
   {
-    category: "Ice Cream Shakes",
+    category: "Ice Cream Desserts",
     emoji: "🍫",
     description: "Rich shakes layered with cookie and ice cream notes.",
     badge: "Rich",
@@ -363,7 +363,7 @@ export default function Home() {
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [searchTerm, setSearchTerm] = useState("");
   const [cart, setCart] = useState<Record<string, number>>({});
-  const [parcelOption, setParcelOption] = useState(false);
+  const [orderType, setOrderType] = useState<"dine-in" | "parcel" | null>(null);
   const [selectedSizeByItem, setSelectedSizeByItem] = useState<Record<number, string>>(() =>
     Object.fromEntries(menuItems.map((item) => [item.id, item.sizes[0]?.label ?? ""])),
   );
@@ -381,8 +381,15 @@ export default function Home() {
   });
 
   useEffect(() => {
+    document.body.style.overflow = orderType === null ? "hidden" : "";
+
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [orderType]);
+
+  useEffect(() => {
     if (!navigator.geolocation) {
-      setLocationMessage("Location support is unavailable on this device.");
       return;
     }
 
@@ -452,10 +459,22 @@ export default function Home() {
     });
   }, [searchTerm, selectedCategory]);
 
-  const subtotal = useMemo(
-    () => cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0) + (parcelOption ? 5 : 0),
-    [cartItems, parcelOption],
+  const totalItems = useMemo(
+    () => cartItems.reduce((sum, item) => sum + item.quantity, 0),
+    [cartItems],
   );
+
+  const subtotal = useMemo(
+    () => cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0),
+    [cartItems],
+  );
+
+  const packingCharge = useMemo(
+    () => (orderType === "parcel" ? totalItems * 5 : 0),
+    [orderType, totalItems],
+  );
+
+  const finalTotal = subtotal + packingCharge;
 
   const selectedBranch = branches.find((branch) => branch.id === branchId) ?? branches[0];
 
@@ -480,8 +499,9 @@ export default function Home() {
       const nextQty = (current[key] ?? 0) + delta;
 
       if (nextQty <= 0) {
-        const { [key]: _, ...rest } = current;
-        return rest;
+        const updated = { ...current };
+        delete updated[key];
+        return updated;
       }
 
       return { ...current, [key]: nextQty };
@@ -492,8 +512,9 @@ export default function Home() {
     const key = getCartKey(itemId, sizeLabel);
 
     setCart((current) => {
-      const { [key]: _, ...rest } = current;
-      return rest;
+      const updated = { ...current };
+      delete updated[key];
+      return updated;
     });
   };
 
@@ -520,10 +541,11 @@ export default function Home() {
       "Items:",
       ...orderLines,
       "",
-      parcelOption ? "Parcel option: +₹5" : "Parcel option: not selected",
+      `Order type: ${orderType === "parcel" ? "Parcel" : "Dine In"}`,
+      `Packing charge: ₹${packingCharge}`,
       "",
       "Total:",
-      `₹${subtotal}`,
+      `₹${finalTotal}`,
       "",
       "Notes:",
       specialInstructions || checkout.notes || "No special instructions.",
@@ -538,7 +560,30 @@ export default function Home() {
   };
 
   return (
-    <main className="min-h-screen bg-[#09090b] text-white">
+    <main className="min-h-screen bg-[#09090b] pb-24 text-white lg:pb-0">
+      {orderType === null && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 px-4">
+          <div className="w-full max-w-md rounded-3xl border border-white/15 bg-zinc-900 p-6 shadow-2xl">
+            <p className="text-sm font-semibold uppercase tracking-[0.3em] text-amber-300">Welcome</p>
+            <h2 className="mt-2 text-2xl font-bold">How would you like your order?</h2>
+            <div className="mt-5 grid gap-3">
+              <button
+                onClick={() => setOrderType("dine-in")}
+                className="rounded-2xl border border-white/15 bg-white/5 px-4 py-3 text-left text-lg font-semibold transition hover:bg-white/10"
+              >
+                🍽️ Dine In
+              </button>
+              <button
+                onClick={() => setOrderType("parcel")}
+                className="rounded-2xl border border-white/15 bg-white/5 px-4 py-3 text-left text-lg font-semibold transition hover:bg-white/10"
+              >
+                📦 Parcel
+              </button>
+            </div>
+            <p className="mt-4 text-sm text-zinc-300">Please select one option to continue.</p>
+          </div>
+        </div>
+      )}
       <section className="relative overflow-hidden">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(251,191,36,0.22),_transparent_35%),radial-gradient(circle_at_bottom_right,_rgba(16,185,129,0.3),_transparent_40%)]" />
         <div className="relative mx-auto flex max-w-7xl flex-col px-4 pb-12 pt-6 sm:px-6 lg:px-8">
@@ -651,212 +696,240 @@ export default function Home() {
       </section>
 
       <section id="menu" className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
-        <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+        <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_360px]">
           <div>
-            <p className="text-sm font-semibold uppercase tracking-[0.4em] text-amber-300">Interactive Menu</p>
-            <h2 className="mt-2 text-3xl font-bold">Build your pickup order</h2>
+            <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+              <div>
+                <p className="text-sm font-semibold uppercase tracking-[0.4em] text-amber-300">Interactive Menu</p>
+                <h2 className="mt-2 text-3xl font-bold">Build your pickup order</h2>
+              </div>
+              <div className="flex w-full max-w-xl flex-col gap-3 md:flex-row">
+                <input
+                  value={searchTerm}
+                  onChange={(event) => setSearchTerm(event.target.value)}
+                  placeholder="Search drinks or shakes"
+                  className="w-full rounded-full border border-white/10 bg-white/5 px-4 py-3 text-white outline-none placeholder:text-zinc-400"
+                />
+                <div className="flex flex-wrap gap-2">
+                  {categories.map((category) => (
+                    <button
+                      key={category}
+                      onClick={() => setSelectedCategory(category)}
+                      className={`rounded-full px-4 py-2 text-sm font-medium transition ${
+                        selectedCategory === category
+                          ? "bg-amber-400 text-black"
+                          : "border border-white/10 bg-white/5 text-zinc-200 hover:bg-white/10"
+                      }`}
+                    >
+                      {category}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+              {filteredItems.map((item) => {
+                const selectedSizeLabel = selectedSizeByItem[item.id] ?? item.sizes[0]?.label ?? "";
+                const selectedSize = item.sizes.find((size) => size.label === selectedSizeLabel) ?? item.sizes[0];
+
+                return (
+                  <motion.article
+                    key={item.id}
+                    layout
+                    className="overflow-hidden rounded-[1.6rem] border border-white/10 bg-white/5"
+                  >
+                    <div className="p-4">
+                      <div className="flex items-center justify-between">
+                        <span className="rounded-full bg-amber-400/20 px-3 py-1 text-xs font-semibold text-amber-200">
+                          {item.badge}
+                        </span>
+                        <span className="text-4xl">{item.emoji}</span>
+                      </div>
+                      <div className="mt-4 space-y-2">
+                        <h3 className="text-xl font-semibold">{item.name}</h3>
+                        <p className="text-sm text-zinc-300">{item.description}</p>
+                        <p className="text-lg font-bold text-amber-300">₹{selectedSize?.price ?? 0}</p>
+                      </div>
+
+                      <div className="mt-4 grid grid-cols-2 gap-2">
+                        {item.sizes.map((size) => (
+                          <button
+                            key={`${item.id}-${size.label}`}
+                            onClick={() =>
+                              setSelectedSizeByItem((current) => ({ ...current, [item.id]: size.label }))
+                            }
+                            className={`rounded-xl border px-2 py-2 text-left text-xs transition ${
+                              selectedSizeLabel === size.label
+                                ? "border-amber-300 bg-amber-400/15 text-amber-100"
+                                : "border-white/10 bg-black/20 text-zinc-200"
+                            }`}
+                          >
+                            <div className="font-semibold">{size.label}</div>
+                            <div className="text-[11px] text-zinc-300">₹{size.price}</div>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                    <div className="mt-4 flex items-center justify-between gap-2 border-t border-white/10 p-4">
+                      <div className="flex items-center gap-2 rounded-full bg-black/20 px-2 py-1">
+                        <button
+                          onClick={() => updateQuantity(item.id, selectedSizeLabel, -1)}
+                          className="h-8 w-8 rounded-full bg-white/10 text-lg text-white"
+                        >
+                          −
+                        </button>
+                        <span className="min-w-6 text-center text-sm font-semibold">
+                          {getItemQuantity(item.id)}
+                        </span>
+                        <button
+                          onClick={() => updateQuantity(item.id, selectedSizeLabel, 1)}
+                          className="h-8 w-8 rounded-full bg-white/10 text-lg text-white"
+                        >
+                          +
+                        </button>
+                      </div>
+                      <button
+                        onClick={() => addToCart(item.id, selectedSizeLabel)}
+                        className="rounded-full bg-emerald-400 px-4 py-2 text-sm font-semibold text-black transition hover:bg-emerald-300"
+                      >
+                        Add to Cart
+                      </button>
+                    </div>
+                  </motion.article>
+                );
+              })}
+            </div>
           </div>
-          <div className="flex w-full max-w-xl flex-col gap-3 md:flex-row">
-            <input
-              value={searchTerm}
-              onChange={(event) => setSearchTerm(event.target.value)}
-              placeholder="Search drinks or shakes"
-              className="w-full rounded-full border border-white/10 bg-white/5 px-4 py-3 text-white outline-none placeholder:text-zinc-400"
-            />
-            <div className="flex flex-wrap gap-2">
-              {categories.map((category) => (
+
+          <aside
+            id="order-summary"
+            className="h-fit rounded-[1.6rem] border border-white/10 bg-white/5 p-4 sm:p-6 lg:sticky lg:top-6"
+          >
+            <div className="mb-4 flex items-center justify-between gap-2">
+              <div>
+                <p className="text-sm font-semibold uppercase tracking-[0.3em] text-amber-300">Shopping Cart</p>
+                <h2 className="mt-2 text-2xl font-bold">Your order</h2>
+              </div>
+              <div className="rounded-full bg-amber-400/15 px-3 py-1 text-sm font-semibold text-amber-200">
+                Total ₹{finalTotal}
+              </div>
+            </div>
+
+            <div className="mb-4 rounded-2xl border border-white/10 bg-black/20 p-3 text-sm">
+              <p className="mb-2 text-zinc-300">Order type</p>
+              <div className="grid grid-cols-2 gap-2">
                 <button
-                  key={category}
-                  onClick={() => setSelectedCategory(category)}
-                  className={`rounded-full px-4 py-2 text-sm font-medium transition ${
-                    selectedCategory === category
-                      ? "bg-amber-400 text-black"
-                      : "border border-white/10 bg-white/5 text-zinc-200 hover:bg-white/10"
+                  onClick={() => setOrderType("dine-in")}
+                  className={`rounded-xl px-3 py-2 font-semibold transition ${
+                    orderType === "dine-in" ? "bg-amber-400 text-black" : "bg-white/10 text-white"
                   }`}
                 >
-                  {category}
+                  🍽️ Dine In
                 </button>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-          {filteredItems.map((item) => {
-            const selectedSizeLabel = selectedSizeByItem[item.id] ?? item.sizes[0]?.label ?? "";
-            const selectedSize = item.sizes.find((size) => size.label === selectedSizeLabel) ?? item.sizes[0];
-
-            return (
-              <motion.article
-                key={item.id}
-                layout
-                className="overflow-hidden rounded-[1.6rem] border border-white/10 bg-white/5"
-              >
-                <div className="p-4">
-                  <div className="flex items-center justify-between">
-                    <span className="rounded-full bg-amber-400/20 px-3 py-1 text-xs font-semibold text-amber-200">
-                      {item.badge}
-                    </span>
-                    <span className="text-4xl">{item.emoji}</span>
-                  </div>
-                  <div className="mt-4 space-y-2">
-                    <h3 className="text-xl font-semibold">{item.name}</h3>
-                    <p className="text-sm text-zinc-300">{item.description}</p>
-                    <p className="text-lg font-bold text-amber-300">₹{selectedSize?.price ?? 0}</p>
-                  </div>
-
-                  <div className="mt-4 grid grid-cols-2 gap-2">
-                    {item.sizes.map((size) => (
-                      <button
-                        key={`${item.id}-${size.label}`}
-                        onClick={() => setSelectedSizeByItem((current) => ({ ...current, [item.id]: size.label }))}
-                        className={`rounded-xl border px-2 py-2 text-left text-xs transition ${
-                          selectedSizeLabel === size.label
-                            ? "border-amber-300 bg-amber-400/15 text-amber-100"
-                            : "border-white/10 bg-black/20 text-zinc-200"
-                        }`}
-                      >
-                        <div className="font-semibold">{size.label}</div>
-                        <div className="text-[11px] text-zinc-300">₹{size.price}</div>
-                      </button>
-                    ))}
-                  </div>
-                </div>
-                <div className="mt-4 flex items-center justify-between gap-2 border-t border-white/10 p-4">
-                  <div className="flex items-center gap-2 rounded-full bg-black/20 px-2 py-1">
-                    <button
-                      onClick={() => updateQuantity(item.id, selectedSizeLabel, -1)}
-                      className="h-8 w-8 rounded-full bg-white/10 text-lg text-white"
-                    >
-                      −
-                    </button>
-                    <span className="min-w-6 text-center text-sm font-semibold">
-                      {getItemQuantity(item.id)}
-                    </span>
-                    <button
-                      onClick={() => updateQuantity(item.id, selectedSizeLabel, 1)}
-                      className="h-8 w-8 rounded-full bg-white/10 text-lg text-white"
-                    >
-                      +
-                    </button>
-                  </div>
-                  <button
-                    onClick={() => addToCart(item.id, selectedSizeLabel)}
-                    className="rounded-full bg-emerald-400 px-4 py-2 text-sm font-semibold text-black transition hover:bg-emerald-300"
-                  >
-                    Add to Cart
-                  </button>
-                </div>
-              </motion.article>
-            );
-          })}
-        </div>
-      </section>
-
-      <section className="mx-auto grid max-w-7xl gap-6 px-4 py-5 sm:px-6 lg:grid-cols-[1.1fr_0.9fr] lg:px-8">
-        <div className="rounded-[1.6rem] border border-white/10 bg-white/5 p-4 sm:p-6">
-          <div className="mb-4 flex items-center justify-between gap-2">
-            <div>
-              <p className="text-sm font-semibold uppercase tracking-[0.3em] text-amber-300">Shopping Cart</p>
-              <h2 className="mt-2 text-2xl font-bold">Your order</h2>
-            </div>
-            <div className="rounded-full bg-amber-400/15 px-3 py-1 text-sm font-semibold text-amber-200">
-              Total ₹{subtotal}
-            </div>
-          </div>
-
-          <label className="mb-4 flex items-center gap-3 rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-sm text-zinc-200">
-            <input
-              type="checkbox"
-              checked={parcelOption}
-              onChange={(event) => setParcelOption(event.target.checked)}
-              className="h-4 w-4 rounded border-white/20 bg-black/20 text-amber-400"
-            />
-            Parcel option (+₹5)
-          </label>
-
-          <div className="space-y-3">
-            {cartItems.length === 0 ? (
-              <div className="rounded-2xl border border-dashed border-white/15 bg-black/20 p-6 text-center text-zinc-300">
-                Your cart is empty. Add a few drinks to get started.
+                <button
+                  onClick={() => setOrderType("parcel")}
+                  className={`rounded-xl px-3 py-2 font-semibold transition ${
+                    orderType === "parcel" ? "bg-amber-400 text-black" : "bg-white/10 text-white"
+                  }`}
+                >
+                  📦 Parcel
+                </button>
               </div>
-            ) : (
-              cartItems.map((item) => (
-                <div key={`${item.id}-${item.sizeLabel}`} className="rounded-2xl bg-black/20 p-4">
-                  <div className="flex items-start justify-between gap-4">
-                    <div>
-                      <p className="font-semibold">{item.name}</p>
-                      <p className="text-sm text-zinc-300">
-                        {item.sizeLabel} • ₹{item.price} each
-                      </p>
-                    </div>
-                    <button
-                      onClick={() => removeItem(item.id, item.sizeLabel)}
-                      className="text-sm text-rose-300"
-                    >
-                      Remove
-                    </button>
-                  </div>
-                  <div className="mt-3 flex items-center gap-2">
-                    <button
-                      onClick={() => updateQuantity(item.id, item.sizeLabel, -1)}
-                      className="h-8 w-8 rounded-full bg-white/10 text-lg"
-                    >
-                      −
-                    </button>
-                    <span className="min-w-8 text-center">{item.quantity}</span>
-                    <button
-                      onClick={() => updateQuantity(item.id, item.sizeLabel, 1)}
-                      className="h-8 w-8 rounded-full bg-white/10 text-lg"
-                    >
-                      +
-                    </button>
-                    <span className="ml-auto font-semibold text-amber-300">
-                      ₹{item.price * item.quantity}
-                    </span>
-                  </div>
+            </div>
+
+            <div className="space-y-3">
+              {cartItems.length === 0 ? (
+                <div className="rounded-2xl border border-dashed border-white/15 bg-black/20 p-6 text-center text-zinc-300">
+                  Your cart is empty. Add a few drinks to get started.
                 </div>
-              ))
-            )}
-          </div>
-
-          <label className="mt-4 block text-sm text-zinc-300">
-            Special instructions
-            <textarea
-              value={specialInstructions}
-              onChange={(event) => setSpecialInstructions(event.target.value)}
-              rows={4}
-              placeholder="Less sugar, extra ice, no nuts, etc."
-              className="mt-2 w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-white outline-none placeholder:text-zinc-400"
-            />
-          </label>
-
-          <a
-            href="#checkout"
-            className="mt-4 inline-flex rounded-full bg-amber-400 px-5 py-2.5 font-semibold text-black transition hover:bg-amber-300"
-          >
-            Continue to checkout
-          </a>
-        </div>
-
-        <div className="rounded-[1.6rem] border border-white/10 bg-gradient-to-br from-emerald-500/10 to-cyan-500/10 p-4 sm:p-6">
-          <p className="text-sm font-semibold uppercase tracking-[0.3em] text-emerald-300">Offers & Combos</p>
-          <div className="mt-4 space-y-3">
-            <div className="rounded-2xl bg-white/5 p-4">
-              <p className="font-semibold">Combo Saver</p>
-              <p className="text-sm text-zinc-300">Any two shakes + free mint cooler.</p>
+              ) : (
+                cartItems.map((item) => (
+                  <div key={`${item.id}-${item.sizeLabel}`} className="rounded-2xl bg-black/20 p-4">
+                    <div className="flex items-start justify-between gap-4">
+                      <div>
+                        <p className="font-semibold">{item.name}</p>
+                        <p className="text-sm text-zinc-300">
+                          {item.sizeLabel} • ₹{item.price} each
+                        </p>
+                      </div>
+                      <button
+                        onClick={() => removeItem(item.id, item.sizeLabel)}
+                        className="text-sm text-rose-300"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                    <div className="mt-3 flex items-center gap-2">
+                      <button
+                        onClick={() => updateQuantity(item.id, item.sizeLabel, -1)}
+                        className="h-8 w-8 rounded-full bg-white/10 text-lg"
+                      >
+                        −
+                      </button>
+                      <span className="min-w-8 text-center">{item.quantity}</span>
+                      <button
+                        onClick={() => updateQuantity(item.id, item.sizeLabel, 1)}
+                        className="h-8 w-8 rounded-full bg-white/10 text-lg"
+                      >
+                        +
+                      </button>
+                      <span className="ml-auto font-semibold text-amber-300">
+                        ₹{item.price * item.quantity}
+                      </span>
+                    </div>
+                  </div>
+                ))
+              )}
             </div>
-            <div className="rounded-2xl bg-white/5 p-4">
-              <p className="font-semibold">Weekend Treat</p>
-              <p className="text-sm text-zinc-300">Buy 3 Mojitos and get one ice cream add-on.</p>
+
+            <div className="mt-4 rounded-2xl border border-white/10 bg-black/20 p-4 text-sm">
+              <div className="flex items-center justify-between text-zinc-300">
+                <span>Subtotal</span>
+                <span>₹{subtotal}</span>
+              </div>
+              <div className="mt-2 flex items-center justify-between text-zinc-300">
+                <span>Packing charge (₹5 × {totalItems} items)</span>
+                <span>₹{packingCharge}</span>
+              </div>
+              <div className="mt-3 border-t border-white/10 pt-3 text-base font-semibold text-amber-200">
+                <div className="flex items-center justify-between">
+                  <span>Final total</span>
+                  <span>₹{finalTotal}</span>
+                </div>
+              </div>
             </div>
-            <div className="rounded-2xl bg-white/5 p-4">
-              <p className="font-semibold">Pickup Advantage</p>
-              <p className="text-sm text-zinc-300">Place an order and sync it directly with the selected branch.</p>
-            </div>
-          </div>
+
+            <label className="mt-4 block text-sm text-zinc-300">
+              Special instructions
+              <textarea
+                value={specialInstructions}
+                onChange={(event) => setSpecialInstructions(event.target.value)}
+                rows={4}
+                placeholder="Less sugar, extra ice, no nuts, etc."
+                className="mt-2 w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-white outline-none placeholder:text-zinc-400"
+              />
+            </label>
+
+            <a
+              href="#checkout"
+              className="mt-4 inline-flex rounded-full bg-amber-400 px-5 py-2.5 font-semibold text-black transition hover:bg-amber-300"
+            >
+              Continue to checkout
+            </a>
+          </aside>
         </div>
       </section>
+
+      <div className="fixed inset-x-0 bottom-0 z-40 border-t border-white/10 bg-zinc-950/95 p-3 backdrop-blur lg:hidden">
+        <a
+          href="#order-summary"
+          className="flex items-center justify-between rounded-2xl bg-amber-400 px-4 py-3 font-semibold text-black"
+        >
+          <span>{totalItems} items • ₹{finalTotal}</span>
+          <span>View Cart</span>
+        </a>
+      </div>
 
       <section id="checkout" className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
         <div className="grid gap-6 lg:grid-cols-[0.95fr_1.05fr]">
@@ -960,7 +1033,7 @@ export default function Home() {
 
             <button
               onClick={sendToWhatsApp}
-              disabled={!cartItems.length}
+              disabled={!cartItems.length || orderType === null}
               className="mt-5 w-full rounded-full bg-emerald-400 px-5 py-3 font-semibold text-black transition hover:bg-emerald-300 disabled:cursor-not-allowed disabled:bg-zinc-700 disabled:text-zinc-300"
             >
               Send order to WhatsApp
