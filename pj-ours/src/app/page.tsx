@@ -29,9 +29,9 @@ type Branch = {
 
 const menuSectionCatalog = [
   {
-    category: "Parcel",
+    category: "Fusion Shakes",
     emoji: "🥤",
-    description: "For creamy parcel-style blends and premium take-home servings.",
+    description: "For creamy fusion-style blends and premium take-home servings.",
     badge: "Signature",
     items: [
       ["Apple Chickoo", [70, 135, 255]],
@@ -59,6 +59,7 @@ const menuSectionCatalog = [
       ["Tender Mango", [90, 175, 335]],
       ["Tender Caramel", [90, 175, 335]],
       ["Tender Chocolate", [90, 175, 335]],
+      ["Avil Milk", [70]],
     ],
   },
   {
@@ -247,7 +248,6 @@ const menuSectionCatalog = [
       ["Passion Fruit Soda", [60]],
       ["Pineapple Soda", [50]],
       ["Shaman Soda", [50]],
-      ["Hawaiian Fresh Fruit Salad", [120]],
     ],
   },
   {
@@ -267,6 +267,7 @@ const menuSectionCatalog = [
       ["Pineapple Falooda", [160]],
       ["Fruit Punch Falooda", [170]],
       ["Kulfi Falooda", [170]],
+      ["Hawaiian Fresh Fruit Salad", [120]],
     ],
   },
   {
