@@ -34,3 +34,18 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+## Supabase (Stage 1 foundation)
+
+This project includes Supabase client utilities and a migration for a `products` table used by the upcoming admin panel.
+
+### Environment variables
+
+Copy `.env.example` to `.env.local` and set:
+
+- `NEXT_PUBLIC_SUPABASE_URL`
+- `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`
+
+### Database migration
+
+Run the SQL in `supabase/migrations/20260813153500_create_products_table.sql` in the Supabase SQL Editor to create the `products` table and policies.

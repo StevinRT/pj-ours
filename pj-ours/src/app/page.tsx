@@ -3,6 +3,8 @@
 import { motion } from "framer-motion";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
+import { createClient } from "@/lib/supabase/client";
+
 type MenuSize = {
   label: string;
   price: number;
@@ -380,6 +382,7 @@ export default function Home() {
     pickupTime: "",
     notes: "",
   });
+  const [productAvailability, setProductAvailability] = useState<Record<string, boolean> | null>(null);
 
   // fly-to-cart animation state
   type FlyingEmoji = { id: number; emoji: string; x: number; y: number; dx: number; dy: number };
@@ -438,6 +441,29 @@ export default function Home() {
     );
   }, []);
 
+  useEffect(() => {
+    const loadAvailability = async () => {
+      const supabase = createClient();
+      const { data, error } = await supabase
+        .from("products")
+        .select("name, category, available");
+
+      if (error) {
+        console.error("Failed to load product availability", error);
+        return;
+      }
+
+      const nextAvailability = (data ?? []).reduce<Record<string, boolean>>((acc, product) => {
+        acc[`${product.name.toLowerCase()}::${product.category.toLowerCase()}`] = product.available;
+        return acc;
+      }, {});
+
+      setProductAvailability(nextAvailability);
+    };
+
+    void loadAvailability();
+  }, []);
+
   const cartItems = useMemo(
     () =>
       menuItems.flatMap((item) =>
@@ -458,7 +484,17 @@ export default function Home() {
   const filteredItems = useMemo(() => {
     const normalizedTerm = searchTerm.trim().toLowerCase();
 
-    return menuItems.filter((item) => {
+    const enrichedItems = menuItems.map((item) => {
+      const lookupKey = `${item.name.toLowerCase()}::${item.category.toLowerCase()}`;
+      const available = productAvailability?.[lookupKey];
+
+      return {
+        ...item,
+        available: available ?? true,
+      };
+    });
+
+    return enrichedItems.filter((item) => {
       const matchesCategory =
         selectedCategory === "All" || item.category === selectedCategory;
       const matchesSearch =
@@ -468,7 +504,7 @@ export default function Home() {
 
       return matchesCategory && matchesSearch;
     });
-  }, [searchTerm, selectedCategory]);
+  }, [productAvailability, searchTerm, selectedCategory]);
 
   const totalItems = useMemo(
     () => cartItems.reduce((sum, item) => sum + item.quantity, 0),
@@ -812,6 +848,9 @@ export default function Home() {
                       <div className="mt-4 space-y-2">
                         <h3 className="text-xl font-semibold">{item.name}</h3>
                         <p className="text-sm text-zinc-300">{item.description}</p>
+                        {"available" in item && item.available === false ? (
+                          <p className="text-sm font-semibold text-rose-300">Out of Stock</p>
+                        ) : null}
                         <p className="text-lg font-bold text-amber-300">₹{selectedSize?.price ?? 0}</p>
                       </div>
 
@@ -854,9 +893,10 @@ export default function Home() {
                       </div>
                       <button
                         onClick={(e) => addToCart(item.id, selectedSizeLabel, e.currentTarget, item.emoji)}
-                        className="rounded-full bg-emerald-400 px-4 py-2 text-sm font-semibold text-black transition hover:bg-emerald-300"
+                        disabled={"available" in item && item.available === false}
+                        className="rounded-full bg-emerald-400 px-4 py-2 text-sm font-semibold text-black transition hover:bg-emerald-300 disabled:cursor-not-allowed disabled:bg-zinc-700 disabled:text-zinc-300"
                       >
-                        Add to Cart
+                        {"available" in item && item.available === false ? "Out of Stock" : "Add to Cart"}
                       </button>
                     </div>
                   </motion.article>
