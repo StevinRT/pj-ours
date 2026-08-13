@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 type MenuSize = {
   label: string;
@@ -381,6 +381,16 @@ export default function Home() {
     notes: "",
   });
 
+  // fly-to-cart animation state
+  type FlyingEmoji = { id: number; emoji: string; x: number; y: number; dx: number; dy: number };
+  const [flyingEmojis, setFlyingEmojis] = useState<FlyingEmoji[]>([]);
+  const [cartBounce, setCartBounce] = useState(false);
+  const [poppingItemId, setPoppingItemId] = useState<number | null>(null);
+  const flyIdRef = useRef(0);
+  // refs to the two cart target elements
+  const desktopCartRef = useRef<HTMLElement>(null);
+  const mobileCartRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     document.body.style.overflow = orderType === null ? "hidden" : "";
 
@@ -486,12 +496,49 @@ export default function Home() {
       .find((item) => item.id === itemId)
       ?.sizes.reduce((sum, size) => sum + (cart[getCartKey(itemId, size.label)] ?? 0), 0) ?? 0;
 
-  const addToCart = (itemId: number, sizeLabel: string) => {
-    setCart((current) => ({
-      ...current,
-      [getCartKey(itemId, sizeLabel)]: (current[getCartKey(itemId, sizeLabel)] ?? 0) + 1,
-    }));
-  };
+  const addToCart = useCallback(
+    (itemId: number, sizeLabel: string, triggerEl?: HTMLButtonElement | null, emoji?: string) => {
+      setCart((current) => ({
+        ...current,
+        [getCartKey(itemId, sizeLabel)]: (current[getCartKey(itemId, sizeLabel)] ?? 0) + 1,
+      }));
+
+      // resolve which cart target to fly toward
+      if (!triggerEl) return;
+      const targetEl = window.innerWidth >= 1024 ? desktopCartRef.current : mobileCartRef.current;
+      if (!targetEl) return;
+
+      // pop the source emoji briefly
+      setPoppingItemId(itemId);
+      setTimeout(() => setPoppingItemId(null), 320);
+
+      const srcRect = triggerEl.getBoundingClientRect();
+      const dstRect = targetEl.getBoundingClientRect();
+
+      const startX = srcRect.left + srcRect.width / 2;
+      const startY = srcRect.top + srcRect.height / 2;
+      const endX = dstRect.left + dstRect.width / 2;
+      const endY = dstRect.top + dstRect.height / 2;
+
+      const id = ++flyIdRef.current;
+      setFlyingEmojis((prev) => [
+        ...prev,
+        { id, emoji: emoji ?? "🥤", x: startX, y: startY, dx: endX - startX, dy: endY - startY },
+      ]);
+
+      // bounce the cart after the emoji arrives (~620ms)
+      setTimeout(() => {
+        setCartBounce(true);
+        setTimeout(() => setCartBounce(false), 400);
+      }, 580);
+
+      // clean up the flying element after animation ends
+      setTimeout(() => {
+        setFlyingEmojis((prev) => prev.filter((e) => e.id !== id));
+      }, 700);
+    },
+    [],
+  );
 
   const updateQuantity = (itemId: number, sizeLabel: string, delta: number) => {
     const key = getCartKey(itemId, sizeLabel);
@@ -562,6 +609,21 @@ export default function Home() {
 
   return (
     <main className="min-h-screen bg-[#09090b] pb-24 text-white lg:pb-0">
+      {/* flying emoji particles – rendered at fixed positions over entire viewport */}
+      {flyingEmojis.map((fe) => (
+        <span
+          key={fe.id}
+          className="fly-emoji"
+          style={{
+            left: fe.x - 16,
+            top: fe.y - 16,
+            "--fly-dx": `${fe.dx}px`,
+            "--fly-dy": `${fe.dy}px`,
+          } as React.CSSProperties}
+        >
+          {fe.emoji}
+        </span>
+      ))}
       {orderType === null && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 px-4">
           <div className="w-full max-w-md rounded-3xl border border-white/15 bg-zinc-900 p-6 shadow-2xl">
@@ -745,7 +807,7 @@ export default function Home() {
                         <span className="rounded-full bg-amber-400/20 px-3 py-1 text-xs font-semibold text-amber-200">
                           {item.badge}
                         </span>
-                        <span className="text-4xl">{item.emoji}</span>
+                        <span className={`text-4xl inline-block ${poppingItemId === item.id ? "emoji-pop" : ""}`}>{item.emoji}</span>
                       </div>
                       <div className="mt-4 space-y-2">
                         <h3 className="text-xl font-semibold">{item.name}</h3>
@@ -791,7 +853,7 @@ export default function Home() {
                         </button>
                       </div>
                       <button
-                        onClick={() => addToCart(item.id, selectedSizeLabel)}
+                        onClick={(e) => addToCart(item.id, selectedSizeLabel, e.currentTarget, item.emoji)}
                         className="rounded-full bg-emerald-400 px-4 py-2 text-sm font-semibold text-black transition hover:bg-emerald-300"
                       >
                         Add to Cart
@@ -804,6 +866,7 @@ export default function Home() {
           </div>
 
           <aside
+            ref={desktopCartRef}
             id="order-summary"
             className="h-fit rounded-[1.6rem] border border-white/10 bg-white/5 p-4 sm:p-6 lg:sticky lg:top-6"
           >
@@ -812,7 +875,7 @@ export default function Home() {
                 <p className="text-sm font-semibold uppercase tracking-[0.3em] text-amber-300">Shopping Cart</p>
                 <h2 className="mt-2 text-2xl font-bold">Your order</h2>
               </div>
-              <div className="rounded-full bg-amber-400/15 px-3 py-1 text-sm font-semibold text-amber-200">
+              <div className={`rounded-full bg-amber-400/15 px-3 py-1 text-sm font-semibold text-amber-200 ${cartBounce ? "cart-bounce" : ""}`}>
                 Total ₹{finalTotal}
               </div>
             </div>
@@ -922,10 +985,10 @@ export default function Home() {
         </div>
       </section>
 
-      <div className="fixed inset-x-0 bottom-0 z-40 border-t border-white/10 bg-zinc-950/95 p-3 backdrop-blur lg:hidden">
+      <div ref={mobileCartRef} className="fixed inset-x-0 bottom-0 z-40 border-t border-white/10 bg-zinc-950/95 p-3 backdrop-blur lg:hidden">
         <a
           href="#order-summary"
-          className="flex items-center justify-between rounded-2xl bg-amber-400 px-4 py-3 font-semibold text-black"
+          className={`flex items-center justify-between rounded-2xl bg-amber-400 px-4 py-3 font-semibold text-black ${cartBounce ? "cart-bounce" : ""}`}
         >
           <span>{totalItems} items • ₹{finalTotal}</span>
           <span>View Cart</span>
