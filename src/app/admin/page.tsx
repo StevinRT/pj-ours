@@ -2,7 +2,7 @@
 
 import { requireAdminClient } from "@/lib/supabase/admin";
 import { listProducts } from "@/lib/products";
-import { listTodayOrders } from "@/lib/orders";
+import { listTodayOrders, type OrderRow } from "@/lib/orders";
 
 import AdminSignOutButton from "./sign-out-button";
 import OrdersPanel from "./orders-panel";
@@ -23,7 +23,7 @@ export default async function AdminPage() {
 
   const [products, orders] = await Promise.all([
     listProducts(supabase),
-    listTodayOrders(supabase),
+    listTodayOrders(supabase).catch((): OrderRow[] => []),
   ]);
 
   return (
