@@ -2,8 +2,10 @@
 
 import { requireAdminClient } from "@/lib/supabase/admin";
 import { listProducts } from "@/lib/products";
+import { listTodayOrders } from "@/lib/orders";
 
 import AdminSignOutButton from "./sign-out-button";
+import OrdersPanel from "./orders-panel";
 import {
   createProductAction,
   deleteProductAction,
@@ -19,7 +21,10 @@ export default async function AdminPage() {
     redirect("/admin/sign-in?next=/admin");
   }
 
-  const products = await listProducts(supabase);
+  const [products, orders] = await Promise.all([
+    listProducts(supabase),
+    listTodayOrders(supabase),
+  ]);
 
   return (
     <main className="min-h-screen bg-[#09090b] px-4 py-10 text-white">
@@ -32,6 +37,8 @@ export default async function AdminPage() {
           </div>
           <AdminSignOutButton />
         </div>
+
+        <OrdersPanel initialOrders={orders} />
 
         <section className="rounded-3xl border border-white/10 bg-white/5 p-6">
           <h2 className="text-xl font-semibold">Add product</h2>

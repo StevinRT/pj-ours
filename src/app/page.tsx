@@ -383,6 +383,7 @@ export default function Home() {
     notes: "",
   });
   const [productAvailability, setProductAvailability] = useState<Record<string, boolean> | null>(null);
+  const [isPlacingOrder, setIsPlacingOrder] = useState(false);
 
   // fly-to-cart animation state
   type FlyingEmoji = { id: number; emoji: string; x: number; y: number; dx: number; dy: number };
@@ -602,9 +603,36 @@ export default function Home() {
     });
   };
 
-  const sendToWhatsApp = () => {
-    if (!cartItems.length) {
+  const placeOrder = useCallback(async () => {
+    if (!cartItems.length || orderType === null) {
       return;
+    }
+
+    setIsPlacingOrder(true);
+
+    // Save order to Supabase so it appears in the admin panel.
+    try {
+      const supabase = createClient();
+      await supabase.from("orders").insert({
+        customer_name: checkout.name,
+        customer_phone: checkout.phone,
+        branch: branchId,
+        order_type: orderType,
+        items: cartItems.map((item) => ({
+          name: item.name,
+          sizeLabel: item.sizeLabel,
+          price: item.price,
+          quantity: item.quantity,
+          category: item.category,
+        })),
+        subtotal,
+        packing_charge: packingCharge,
+        total: finalTotal,
+        special_instructions: (specialInstructions || checkout.notes) || null,
+        pickup_time: checkout.pickupTime || null,
+      });
+    } catch (err) {
+      console.error("Order save failed:", err);
     }
 
     const orderLines = cartItems.map(
@@ -641,7 +669,9 @@ export default function Home() {
       message,
     )}`;
     window.open(url, "_blank", "noopener,noreferrer");
-  };
+
+    setIsPlacingOrder(false);
+  }, [cartItems, orderType, checkout, branchId, selectedBranch, subtotal, packingCharge, finalTotal, specialInstructions]);
 
   return (
     <main className="min-h-screen bg-[#09090b] pb-24 text-white lg:pb-0">
@@ -1136,11 +1166,11 @@ export default function Home() {
             </div>
 
             <button
-              onClick={sendToWhatsApp}
-              disabled={!cartItems.length || orderType === null}
+              onClick={() => { void placeOrder(); }}
+              disabled={isPlacingOrder || !cartItems.length || orderType === null}
               className="mt-5 w-full rounded-full bg-emerald-400 px-5 py-3 font-semibold text-black transition hover:bg-emerald-300 disabled:cursor-not-allowed disabled:bg-zinc-700 disabled:text-zinc-300"
             >
-              Send order to WhatsApp
+              {isPlacingOrder ? "Placing order…" : "Send order to WhatsApp"}
             </button>
           </div>
         </div>
