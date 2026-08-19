@@ -7,14 +7,17 @@ export type Database = {
         Row: {
           id: string;
           order_number: number;
+          source: string;
           customer_name: string;
           customer_phone: string;
           branch: string;
           order_type: string;
+          table_number: string | null;
           items: Json;
           subtotal: number;
           packing_charge: number;
           total: number;
+          payment_method: string | null;
           special_instructions: string | null;
           pickup_time: string | null;
           status: string;
@@ -25,14 +28,17 @@ export type Database = {
         Insert: {
           id?: string;
           order_number?: number;
+          source?: string;
           customer_name?: string;
           customer_phone?: string;
           branch: string;
           order_type: string;
+          table_number?: string | null;
           items: Json;
           subtotal: number;
           packing_charge?: number;
           total: number;
+          payment_method?: string | null;
           special_instructions?: string | null;
           pickup_time?: string | null;
           status?: string;
@@ -43,14 +49,17 @@ export type Database = {
         Update: {
           id?: string;
           order_number?: number;
+          source?: string;
           customer_name?: string;
           customer_phone?: string;
           branch?: string;
           order_type?: string;
+          table_number?: string | null;
           items?: Json;
           subtotal?: number;
           packing_charge?: number;
           total?: number;
+          payment_method?: string | null;
           special_instructions?: string | null;
           pickup_time?: string | null;
           status?: string;

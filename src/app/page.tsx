@@ -382,6 +382,7 @@ export default function Home() {
     phone: "",
     pickupTime: "",
     notes: "",
+    tableNumber: "",
   });
   const [productAvailability, setProductAvailability] = useState<Record<string, boolean> | null>(null);
   const [isPlacingOrder, setIsPlacingOrder] = useState(false);
@@ -615,10 +616,12 @@ export default function Home() {
     try {
       const supabase = createClient();
       await supabase.from("orders").insert({
+        source: "Website",
         customer_name: checkout.name,
         customer_phone: checkout.phone,
         branch: branchId,
         order_type: orderType,
+        table_number: orderType === "dine-in" ? (checkout.tableNumber || null) : null,
         items: cartItems.map((item) => ({
           name: item.name,
           sizeLabel: item.sizeLabel,
@@ -629,8 +632,11 @@ export default function Home() {
         subtotal,
         packing_charge: packingCharge,
         total: finalTotal,
+        payment_method: null,
         special_instructions: (specialInstructions || checkout.notes) || null,
         pickup_time: checkout.pickupTime || null,
+        status: "active",
+        is_read: false,
       });
     } catch (err) {
       console.error("Order save failed:", err);
@@ -1118,6 +1124,19 @@ export default function Home() {
                   className="w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-white outline-none"
                 />
               </label>
+              {orderType === "dine-in" && (
+                <label className="block text-sm">
+                  <span className="mb-2 block text-zinc-300">Table number</span>
+                  <input
+                    value={checkout.tableNumber}
+                    onChange={(event) =>
+                      setCheckout((current) => ({ ...current, tableNumber: event.target.value }))
+                    }
+                    placeholder="e.g. 5"
+                    className="w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-white outline-none"
+                  />
+                </label>
+              )}
               <label className="block text-sm">
                 <span className="mb-2 block text-zinc-300">Pickup time</span>
                 <input

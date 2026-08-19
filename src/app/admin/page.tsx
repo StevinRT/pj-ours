@@ -3,6 +3,7 @@
 import { requireAdminClient } from "@/lib/supabase/admin";
 import { listProducts } from "@/lib/products";
 import AdminSignOutButton from "./sign-out-button";
+import AdminOrdersSection from "./orders-section";
 import {
   createProductAction,
   deleteProductAction,
@@ -26,11 +27,13 @@ export default async function AdminPage() {
         <div className="flex flex-col gap-4 rounded-3xl border border-white/10 bg-white/5 p-6 shadow-2xl sm:flex-row sm:items-center sm:justify-between">
           <div>
             <p className="text-sm font-semibold uppercase tracking-[0.3em] text-amber-300">Admin</p>
-            <h1 className="mt-2 text-3xl font-bold">Products</h1>
-            <p className="mt-2 text-zinc-300">Add, edit, delete, and toggle availability.</p>
+            <h1 className="mt-2 text-3xl font-bold">PJ Ours</h1>
+            <p className="mt-2 text-zinc-300">Live orders, counter ordering, and product management.</p>
           </div>
           <AdminSignOutButton />
         </div>
+
+        <AdminOrdersSection products={products} />
 
         <section className="rounded-3xl border border-white/10 bg-white/5 p-6">
           <h2 className="text-xl font-semibold">Add product</h2>
