@@ -425,7 +425,7 @@ export default function Home() {
             </div>
             <div className="relative flex items-center gap-2">
               <a
-                href="#checkout"
+                href="#menu"
                 className="rounded-full bg-amber-400 px-4 py-2 text-sm font-semibold text-black transition hover:bg-amber-300"
               >
                 Order Now
