@@ -103,7 +103,7 @@ export default function LiveOrders({ onPunchOrder }: { onPunchOrder: () => void 
       const { data } = await supabase
         .from("orders")
         .select("*")
-        .eq("status", "active")
+        .in("status", ["new", "preparing", "ready"])
         .order("created_at", { ascending: false });
 
       const loaded = (data ?? []).map((row) => mapOrder(row as unknown as RawOrder));
@@ -130,7 +130,7 @@ export default function LiveOrders({ onPunchOrder }: { onPunchOrder: () => void 
             }
           } else if (payload.eventType === "UPDATE") {
             const updated = mapOrder(payload.new as unknown as RawOrder);
-            if (updated.status !== "active") {
+            if (!["new", "preparing", "ready"].includes(updated.status)) {
               setOrders((prev) => prev.filter((o) => o.id !== updated.id));
               setNewOrderIds((prev) => {
                 const s = new Set(prev);

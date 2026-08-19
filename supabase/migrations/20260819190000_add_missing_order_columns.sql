@@ -4,8 +4,8 @@
 alter table public.orders add column if not exists payment_method text;
 alter table public.orders add column if not exists source       text not null default 'Website';
 alter table public.orders add column if not exists table_number text;
-alter table public.orders add column if not exists status       text not null default 'active';
-alter table public.orders add column if not exists is_read      boolean not null default false;
+-- NOTE: status already exists with check (status in ('new','preparing','ready','completed','cancelled')) default 'new'
+-- Do NOT add/alter status here.
 
 -- Sequence and order_number (in case they are also missing)
 create sequence if not exists public.orders_order_number_seq start with 1001;

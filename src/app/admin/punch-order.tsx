@@ -92,7 +92,7 @@ export default function PunchOrder({ products, onClose }: Props) {
       payment_method: paymentMethod,
       special_instructions: null,
       pickup_time: null,
-      status: "active",
+      status: "new",
       is_read: true,
     });
 

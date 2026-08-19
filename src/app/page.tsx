@@ -635,7 +635,7 @@ export default function Home() {
         payment_method: null,
         special_instructions: (specialInstructions || checkout.notes) || null,
         pickup_time: checkout.pickupTime || null,
-        status: "active",
+        status: "new",
         is_read: false,
       });
     } catch (err) {
