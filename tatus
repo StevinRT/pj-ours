@@ -1,0 +1,5 @@
+[33m374d70a[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m Fix hamburger menu visibility and dropdown
+[33m274c78f[m Fix hamburger menu visibility
+[33ma9693d3[m Add admin panel hamburger menu
+[33m0d36f1d[m Revert orders feature
+[33m336b646[m Make admin orders panel resilient
