@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 
 import { createClient } from "@/lib/supabase/client";
+import type { Json } from "@/lib/supabase/types";
 
 import { printBill, printKot } from "./print-utils";
 
@@ -34,6 +35,48 @@ type Order = {
   created_at: string;
 };
 
+// Shape returned by Supabase — items is Json until we parse it
+type RawOrder = Omit<Order, "items"> & {
+  items: Json;
+  pickup_time?: string | null;
+  updated_at?: string;
+};
+
+const parseItems = (json: Json): OrderItem[] => {
+  if (!Array.isArray(json)) return [];
+  return (json as Json[]).flatMap((entry) => {
+    if (typeof entry !== "object" || entry === null || Array.isArray(entry)) return [];
+    const row = entry as Record<string, Json>;
+    return [{
+      name: String(row.name ?? ""),
+      sizeLabel: String(row.sizeLabel ?? ""),
+      price: Number(row.price ?? 0),
+      quantity: Number(row.quantity ?? 0),
+      category: row.category !== undefined ? String(row.category) : undefined,
+    }];
+  });
+};
+
+const mapOrder = (raw: RawOrder): Order => ({
+  id: raw.id,
+  order_number: raw.order_number,
+  source: raw.source,
+  customer_name: raw.customer_name,
+  customer_phone: raw.customer_phone,
+  branch: raw.branch,
+  order_type: raw.order_type,
+  table_number: raw.table_number,
+  items: parseItems(raw.items),
+  subtotal: raw.subtotal,
+  packing_charge: raw.packing_charge,
+  total: raw.total,
+  payment_method: raw.payment_method,
+  special_instructions: raw.special_instructions,
+  status: raw.status,
+  is_read: raw.is_read,
+  created_at: raw.created_at,
+});
+
 const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 
 const fmtDateTime = (s: string) => {
@@ -63,7 +106,7 @@ export default function LiveOrders({ onPunchOrder }: { onPunchOrder: () => void 
         .eq("status", "active")
         .order("created_at", { ascending: false });
 
-      const loaded = (data ?? []) as Order[];
+      const loaded = (data ?? []).map((row) => mapOrder(row as unknown as RawOrder));
       setOrders(loaded);
       setLoading(false);
       loaded.forEach((o) => initialIdsRef.current.add(o.id));
@@ -78,7 +121,7 @@ export default function LiveOrders({ onPunchOrder }: { onPunchOrder: () => void 
         { event: "*", schema: "public", table: "orders" },
         (payload) => {
           if (payload.eventType === "INSERT") {
-            const incoming = payload.new as Order;
+            const incoming = mapOrder(payload.new as unknown as RawOrder);
             if (incoming.status === "active") {
               setOrders((prev) => [incoming, ...prev]);
               if (!initialIdsRef.current.has(incoming.id)) {
@@ -86,7 +129,7 @@ export default function LiveOrders({ onPunchOrder }: { onPunchOrder: () => void 
               }
             }
           } else if (payload.eventType === "UPDATE") {
-            const updated = payload.new as Order;
+            const updated = mapOrder(payload.new as unknown as RawOrder);
             if (updated.status !== "active") {
               setOrders((prev) => prev.filter((o) => o.id !== updated.id));
               setNewOrderIds((prev) => {
@@ -155,7 +198,7 @@ export default function LiveOrders({ onPunchOrder }: { onPunchOrder: () => void 
           {orders.map((order) => {
             const isNew = newOrderIds.has(order.id) || !order.is_read;
             const isDineIn = order.order_type === "dine-in";
-            const items = order.items as OrderItem[];
+            const items = order.items;
 
             return (
               <div
