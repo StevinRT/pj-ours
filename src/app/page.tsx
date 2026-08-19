@@ -486,18 +486,10 @@ export default function Home() {
                   View Menu
                 </a>
               </div>
-              <div className="grid gap-3 sm:grid-cols-3">
+              <div className="grid gap-3">
                 <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
-                  <p className="text-2xl font-bold text-amber-300">2</p>
-                  <p className="text-sm text-zinc-300">Outlet branches</p>
-                </div>
-                <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
-                  <p className="text-2xl font-bold text-emerald-300">2 min</p>
+                  <p className="text-2xl font-bold text-emerald-300">5 min</p>
                   <p className="text-sm text-zinc-300">Quick checkout flow</p>
-                </div>
-                <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
-                  <p className="text-2xl font-bold text-rose-300">24/7</p>
-                  <p className="text-sm text-zinc-300">Online ordering vibe</p>
                 </div>
               </div>
             </motion.div>
