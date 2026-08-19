@@ -741,12 +741,18 @@ export default function Home() {
               <button
                 onClick={() => setMenuOpen((o) => !o)}
                 aria-label="Open menu"
-                className="flex h-11 w-11 items-center justify-center rounded-full border border-white/25 bg-white/10 text-xl text-white transition hover:bg-white/20"
+                className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-full border border-zinc-600 bg-zinc-800 transition hover:bg-zinc-700"
               >
-                ☰
+                {/* SVG bars: no font-fallback dependency, explicit fill */}
+                <svg width="20" height="15" viewBox="0 0 20 15" fill="none" aria-hidden="true">
+                  <rect width="20" height="2.5" rx="1.25" fill="white" />
+                  <rect y="6.25" width="20" height="2.5" rx="1.25" fill="white" />
+                  <rect y="12.5" width="20" height="2.5" rx="1.25" fill="white" />
+                </svg>
               </button>
+              {/* fixed so section overflow-hidden cannot clip it */}
               {menuOpen && (
-                <div className="absolute right-0 top-11 z-50 min-w-[160px] rounded-2xl border border-white/10 bg-zinc-900 py-2 shadow-2xl">
+                <div className="fixed right-4 top-[88px] z-[100] min-w-[160px] rounded-2xl border border-white/10 bg-zinc-900 py-2 shadow-2xl">
                   <a
                     href="https://www.pjours.in/admin"
                     onClick={() => setMenuOpen(false)}
