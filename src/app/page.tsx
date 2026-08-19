@@ -515,34 +515,29 @@ export default function Home() {
               initial={{ opacity: 0, scale: 0.96 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.5, delay: 0.1 }}
-              className="rounded-[2rem] border border-white/10 bg-gradient-to-br from-amber-500/20 to-emerald-500/10 p-4 shadow-2xl"
+              className="rounded-[2rem] border border-white/10 bg-black/20 p-5 shadow-2xl backdrop-blur-sm"
             >
-              <div className="grid min-h-[420px] grid-cols-2 gap-3">
-                <div className="rounded-[1.5rem] bg-gradient-to-br from-amber-300 to-orange-500 p-6 text-black">
-                  <div className="text-6xl">🥤</div>
-                  <p className="mt-4 text-sm font-bold uppercase">Freshly blended</p>
+              <div className="mb-4 flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <span className="text-sm text-amber-300" aria-hidden="true">★</span>
+                  <span className="text-sm font-bold text-white">Best Sellers</span>
                 </div>
-                <div className="rounded-[1.5rem] bg-gradient-to-br from-cyan-300 to-sky-500 p-6 text-slate-950">
-                  <div className="text-6xl">🧋</div>
-                  <p className="mt-4 text-sm font-bold uppercase">Cool & vibrant</p>
-                </div>
-                <div className="col-span-2 rounded-[1.5rem] bg-black/30 p-6">
-                  <div className="mb-4 flex items-center justify-between">
-                    <span className="rounded-full bg-white/10 px-3 py-1 text-xs text-white">Best sellers</span>
-                    <span className="text-xs text-zinc-300">Updated daily</span>
-                  </div>
-                  <div className="grid gap-3 sm:grid-cols-3">
-                    {menuItems
-                      .filter((item) => bestSellerIds.includes(item.id))
-                      .map((item) => (
-                        <div key={item.id} className="rounded-2xl bg-white/5 p-3 text-center">
-                          <div className="text-3xl">{item.emoji}</div>
-                          <p className="mt-2 font-semibold">{item.name}</p>
-                          <p className="text-sm text-zinc-300">₹{item.sizes[0]?.price ?? 0}</p>
-                        </div>
-                      ))}
-                  </div>
-                </div>
+                <span className="rounded-full bg-white/10 px-2.5 py-1 text-xs text-zinc-400">Updated daily</span>
+              </div>
+              <div className="flex gap-3 overflow-x-auto pb-1 [scrollbar-width:none] [-ms-overflow-style:none] sm:grid sm:grid-cols-3 sm:overflow-visible sm:pb-0">
+                {menuItems
+                  .filter((item) => bestSellerIds.includes(item.id))
+                  .map((item) => (
+                    <a
+                      key={item.id}
+                      href="#menu"
+                      className="group flex w-[148px] flex-shrink-0 flex-col items-center gap-2 rounded-2xl border border-white/10 bg-white/5 p-4 text-center no-underline transition-all duration-200 hover:-translate-y-0.5 hover:border-amber-300/30 hover:bg-amber-400/10 hover:shadow-[0_4px_16px_rgba(251,191,36,0.14)] sm:w-auto"
+                    >
+                      <span className="text-4xl transition-transform duration-200 group-hover:scale-110">{item.emoji}</span>
+                      <p className="text-sm font-semibold leading-tight text-white">{item.name}</p>
+                      <p className="text-xs font-bold text-amber-300">₹{item.sizes[0]?.price ?? 0}</p>
+                    </a>
+                  ))}
               </div>
             </motion.div>
           </div>
