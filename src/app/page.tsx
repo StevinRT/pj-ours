@@ -426,7 +426,7 @@ export default function Home() {
             <div className="relative flex items-center gap-2">
               <a
                 href="#menu"
-                className="rounded-full bg-amber-400 px-4 py-2 text-sm font-semibold text-black transition hover:bg-amber-300"
+                className="rounded-full bg-amber-400 px-5 py-2.5 text-sm font-bold text-black shadow-[0_4px_14px_rgba(251,191,36,0.45)] transition-all duration-200 hover:-translate-y-0.5 hover:bg-amber-300 hover:shadow-[0_6px_20px_rgba(251,191,36,0.55)] active:translate-y-0 active:shadow-[0_2px_8px_rgba(251,191,36,0.35)]"
               >
                 Order Now
               </a>
@@ -481,7 +481,7 @@ export default function Home() {
               <div className="flex flex-col gap-3 sm:flex-row">
                 <a
                   href="#menu"
-                  className="rounded-full border border-white/15 bg-white/5 px-6 py-3 text-center font-semibold text-white transition hover:bg-white/10"
+                  className="rounded-full border border-white/25 bg-white/10 px-7 py-3.5 text-center font-bold text-white shadow-[0_4px_16px_rgba(0,0,0,0.35)] backdrop-blur-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-white/40 hover:bg-white/15 hover:shadow-[0_6px_22px_rgba(0,0,0,0.45)] active:translate-y-0 active:shadow-[0_2px_8px_rgba(0,0,0,0.25)]"
                 >
                   View Menu
                 </a>
