@@ -370,6 +370,7 @@ export default function Home() {
   const [selectedSizeByItem, setSelectedSizeByItem] = useState<Record<number, string>>(() =>
     Object.fromEntries(menuItems.map((item) => [item.id, item.sizes[0]?.label ?? ""])),
   );
+  const [menuOpen, setMenuOpen] = useState(false);
   const [specialInstructions, setSpecialInstructions] = useState("");
   const [branchId, setBranchId] = useState(branches[0].id);
   const [suggestedBranchId, setSuggestedBranchId] = useState<string | null>(null);
@@ -730,12 +731,34 @@ export default function Home() {
                 <p className="text-xs text-zinc-300">Pickup Ordering</p>
               </div>
             </div>
-            <a
-              href="#checkout"
-              className="rounded-full bg-amber-400 px-4 py-2 text-sm font-semibold text-black transition hover:bg-amber-300"
-            >
-              Order Now
-            </a>
+            <div className="relative flex items-center gap-2">
+              <a
+                href="#checkout"
+                className="rounded-full bg-amber-400 px-4 py-2 text-sm font-semibold text-black transition hover:bg-amber-300"
+              >
+                Order Now
+              </a>
+              <button
+                onClick={() => setMenuOpen((o) => !o)}
+                aria-label="Open menu"
+                className="flex h-9 w-9 flex-col items-center justify-center gap-1.5 rounded-full border border-white/10 bg-white/5 transition hover:bg-white/10"
+              >
+                <span className="block h-0.5 w-4 bg-white" />
+                <span className="block h-0.5 w-4 bg-white" />
+                <span className="block h-0.5 w-4 bg-white" />
+              </button>
+              {menuOpen && (
+                <div className="absolute right-0 top-11 z-50 min-w-[160px] rounded-2xl border border-white/10 bg-zinc-900 py-2 shadow-2xl">
+                  <a
+                    href="https://www.pjours.in/admin"
+                    onClick={() => setMenuOpen(false)}
+                    className="block px-4 py-2.5 text-sm font-medium text-white transition hover:bg-white/10"
+                  >
+                    Admin Panel
+                  </a>
+                </div>
+              )}
+            </div>
           </header>
 
           <div className="grid items-center gap-10 md:grid-cols-[1.1fr_0.9fr]">
