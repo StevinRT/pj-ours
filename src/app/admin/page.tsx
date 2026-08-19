@@ -4,6 +4,7 @@ import { requireAdminClient } from "@/lib/supabase/admin";
 import { listProducts } from "@/lib/products";
 import AdminSignOutButton from "./sign-out-button";
 import AdminOrdersSection from "./orders-section";
+import DailySales from "./daily-sales";
 import {
   createProductAction,
   deleteProductAction,
@@ -21,6 +22,11 @@ export default async function AdminPage() {
 
   const products = await listProducts(supabase);
 
+  const { data: dailySales } = await supabase
+    .from("daily_sales")
+    .select("*")
+    .order("sale_date", { ascending: false });
+
   return (
     <main className="min-h-screen bg-[#09090b] px-4 py-10 text-white">
       <div className="mx-auto max-w-7xl space-y-6">
@@ -34,6 +40,8 @@ export default async function AdminPage() {
         </div>
 
         <AdminOrdersSection products={products} />
+
+        <DailySales sales={dailySales ?? []} />
 
         <section className="rounded-3xl border border-white/10 bg-white/5 p-6">
           <h2 className="text-xl font-semibold">Add product</h2>
