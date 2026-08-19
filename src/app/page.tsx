@@ -83,6 +83,8 @@ export default function Home() {
   // refs to the two cart target elements
   const desktopCartRef = useRef<HTMLElement>(null);
   const mobileCartRef = useRef<HTMLDivElement>(null);
+  const [isScrolling, setIsScrolling] = useState(false);
+  const scrollTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     document.body.style.overflow = orderType === null ? "hidden" : "";
@@ -91,6 +93,20 @@ export default function Home() {
       document.body.style.overflow = "";
     };
   }, [orderType]);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolling(true);
+      if (scrollTimerRef.current) clearTimeout(scrollTimerRef.current);
+      scrollTimerRef.current = setTimeout(() => setIsScrolling(false), 150);
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      if (scrollTimerRef.current) clearTimeout(scrollTimerRef.current);
+    };
+  }, []);
 
   useEffect(() => {
     if (!navigator.geolocation) {
@@ -765,7 +781,7 @@ export default function Home() {
         </div>
       </section>
 
-      <div ref={mobileCartRef} className="fixed inset-x-0 bottom-0 z-40 border-t border-white/10 bg-zinc-950/95 p-3 backdrop-blur lg:hidden">
+      <div ref={mobileCartRef} className={`fixed inset-x-0 bottom-0 z-40 border-t border-white/10 bg-zinc-950/95 p-3 backdrop-blur transition-transform duration-200 lg:hidden ${isScrolling ? "translate-y-full" : "translate-y-0"}`}>
         <a
           href="#order-summary"
           className={`flex items-center justify-between rounded-2xl bg-amber-400 px-4 py-3 font-semibold text-black ${cartBounce ? "cart-bounce" : ""}`}
