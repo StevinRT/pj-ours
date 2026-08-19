@@ -515,7 +515,7 @@ export default function Home() {
               initial={{ opacity: 0, scale: 0.96 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.5, delay: 0.1 }}
-              className="rounded-[2rem] border border-white/10 bg-black/20 p-5 shadow-2xl backdrop-blur-sm"
+              className="overflow-hidden rounded-[2rem] border border-white/10 bg-black/20 p-5 shadow-2xl backdrop-blur-sm"
             >
               <div className="mb-4 flex items-center justify-between">
                 <div className="flex items-center gap-2">
@@ -524,17 +524,17 @@ export default function Home() {
                 </div>
                 <span className="rounded-full bg-white/10 px-2.5 py-1 text-xs text-zinc-400">Updated daily</span>
               </div>
-              <div className="flex gap-3 overflow-x-auto pb-1 [scrollbar-width:none] [-ms-overflow-style:none] sm:grid sm:grid-cols-3 sm:overflow-visible sm:pb-0">
+              <div className="grid grid-cols-3 gap-2.5">
                 {menuItems
                   .filter((item) => bestSellerIds.includes(item.id))
                   .map((item) => (
                     <a
                       key={item.id}
                       href="#menu"
-                      className="group flex w-[148px] flex-shrink-0 flex-col items-center gap-2 rounded-2xl border border-white/10 bg-white/5 p-4 text-center no-underline transition-all duration-200 hover:-translate-y-0.5 hover:border-amber-300/30 hover:bg-amber-400/10 hover:shadow-[0_4px_16px_rgba(251,191,36,0.14)] sm:w-auto"
+                      className="group flex flex-col items-center gap-2 rounded-2xl border border-white/10 bg-white/5 p-3 text-center no-underline transition-all duration-200 hover:-translate-y-0.5 hover:border-amber-300/30 hover:bg-amber-400/10 hover:shadow-[0_4px_16px_rgba(251,191,36,0.14)]"
                     >
-                      <span className="text-4xl transition-transform duration-200 group-hover:scale-110">{item.emoji}</span>
-                      <p className="text-sm font-semibold leading-tight text-white">{item.name}</p>
+                      <span className="text-3xl transition-transform duration-200 group-hover:scale-110">{item.emoji}</span>
+                      <p className="text-xs font-semibold leading-tight text-white">{item.name}</p>
                       <p className="text-xs font-bold text-amber-300">₹{item.sizes[0]?.price ?? 0}</p>
                     </a>
                   ))}
