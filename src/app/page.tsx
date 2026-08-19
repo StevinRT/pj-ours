@@ -474,37 +474,38 @@ export default function Home() {
       </div>
 
       <section className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(251,191,36,0.22),_transparent_35%),radial-gradient(circle_at_bottom_right,_rgba(16,185,129,0.3),_transparent_40%)]" />
-        <div className="relative mx-auto flex max-w-7xl flex-col px-4 pb-12 pt-6 sm:px-6 lg:px-8">
-          <div className="grid items-center gap-10 md:grid-cols-[1.1fr_0.9fr]">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_90%_60%_at_-5%_-5%,_rgba(251,191,36,0.2),_transparent_55%),radial-gradient(ellipse_70%_70%_at_108%_108%,_rgba(16,185,129,0.26),_transparent_55%),radial-gradient(ellipse_50%_35%_at_50%_105%,_rgba(251,191,36,0.07),_transparent_100%)]" />
+        <div className="relative mx-auto flex max-w-7xl flex-col px-4 pb-16 pt-8 sm:px-6 sm:pt-12 lg:px-8">
+          <div className="grid items-center gap-12 md:grid-cols-[1.1fr_0.9fr]">
             <motion.div
-              initial={{ opacity: 0, y: 24 }}
+              initial={{ opacity: 0, y: 28 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-              className="space-y-6"
+              transition={{ duration: 0.55 }}
+              className="space-y-7"
             >
-              <span className="inline-flex rounded-full border border-emerald-400/40 bg-emerald-400/10 px-4 py-1 text-sm text-emerald-200">
+              <span className="inline-flex items-center gap-2 rounded-full border border-emerald-400/50 bg-emerald-400/10 px-4 py-1.5 text-sm font-semibold text-emerald-200 shadow-[0_0_18px_rgba(52,211,153,0.12)]">
+                <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-400" aria-hidden="true" />
                 Premium juice & shake pickup experience
               </span>
-              <div className="space-y-4">
-                <h1 className="text-[2.1rem] font-black leading-[1.15] tracking-tight sm:text-5xl lg:text-6xl">
+              <div className="space-y-5">
+                <h1 className="bg-gradient-to-b from-white to-zinc-300 bg-clip-text text-[2.1rem] font-black leading-[1.15] tracking-tight text-transparent sm:text-5xl lg:text-6xl">
                   Fresh blends made for the fastest pickup orders.
                 </h1>
-                <p className="max-w-xl text-lg text-zinc-300">
+                <p className="max-w-lg text-base leading-relaxed text-zinc-300 sm:text-lg">
                   Browse the handcrafted menu, build your cart in seconds, and send a formatted WhatsApp order straight to your nearest PJ Ours branch.
                 </p>
               </div>
               <div className="flex flex-col gap-3 sm:flex-row">
                 <a
                   href="#menu"
-                  className="rounded-full border border-white/25 bg-white/10 px-7 py-3.5 text-center font-bold text-white shadow-[0_4px_16px_rgba(0,0,0,0.35)] backdrop-blur-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-white/40 hover:bg-white/15 hover:shadow-[0_6px_22px_rgba(0,0,0,0.45)] active:translate-y-0 active:shadow-[0_2px_8px_rgba(0,0,0,0.25)]"
+                  className="rounded-full bg-amber-400 px-7 py-3.5 text-center font-bold text-black shadow-[0_4px_18px_rgba(251,191,36,0.45)] transition-all duration-200 hover:-translate-y-0.5 hover:bg-amber-300 hover:shadow-[0_6px_26px_rgba(251,191,36,0.58)] active:translate-y-0 active:shadow-[0_2px_10px_rgba(251,191,36,0.35)]"
                 >
                   View Menu
                 </a>
               </div>
               <div className="grid gap-3">
-                <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
-                  <p className="text-2xl font-bold text-emerald-300">5 min</p>
+                <div className="inline-flex w-fit items-center gap-3 rounded-2xl border border-emerald-500/25 bg-emerald-950/30 px-5 py-3.5 shadow-[inset_0_1px_0_rgba(52,211,153,0.1)]">
+                  <p className="text-2xl font-black text-emerald-300">5 min</p>
                   <p className="text-sm text-zinc-300">Quick checkout flow</p>
                 </div>
               </div>
