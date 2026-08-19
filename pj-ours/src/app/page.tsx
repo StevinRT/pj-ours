@@ -370,6 +370,7 @@ export default function Home() {
   const [selectedSizeByItem, setSelectedSizeByItem] = useState<Record<number, string>>(() =>
     Object.fromEntries(menuItems.map((item) => [item.id, item.sizes[0]?.label ?? ""])),
   );
+  const [menuOpen, setMenuOpen] = useState(false);
   const [specialInstructions, setSpecialInstructions] = useState("");
   const [branchId, setBranchId] = useState(branches[0].id);
   const [suggestedBranchId, setSuggestedBranchId] = useState<string | null>(null);
@@ -700,12 +701,38 @@ export default function Home() {
                 <p className="text-xs text-zinc-300">Pickup Ordering</p>
               </div>
             </div>
-            <a
-              href="#checkout"
-              className="rounded-full bg-amber-400 px-4 py-2 text-sm font-semibold text-black transition hover:bg-amber-300"
-            >
-              Order Now
-            </a>
+            <div className="relative flex items-center gap-2">
+              <a
+                href="#checkout"
+                className="rounded-full bg-amber-400 px-4 py-2 text-sm font-semibold text-black transition hover:bg-amber-300"
+              >
+                Order Now
+              </a>
+              <button
+                onClick={() => setMenuOpen((o) => !o)}
+                aria-label="Open menu"
+                className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-full border border-zinc-600 bg-zinc-800 transition hover:bg-zinc-700"
+              >
+                {/* SVG bars: no font-fallback dependency, explicit fill */}
+                <svg width="20" height="15" viewBox="0 0 20 15" fill="none" aria-hidden="true">
+                  <rect width="20" height="2.5" rx="1.25" fill="white" />
+                  <rect y="6.25" width="20" height="2.5" rx="1.25" fill="white" />
+                  <rect y="12.5" width="20" height="2.5" rx="1.25" fill="white" />
+                </svg>
+              </button>
+              {/* fixed so section overflow-hidden cannot clip it */}
+              {menuOpen && (
+                <div className="fixed right-4 top-[88px] z-[100] min-w-[160px] rounded-2xl border border-white/10 bg-zinc-900 py-2 shadow-2xl">
+                  <a
+                    href="https://www.pjours.in/admin"
+                    onClick={() => setMenuOpen(false)}
+                    className="block px-4 py-2.5 text-sm font-medium text-white transition hover:bg-white/10"
+                  >
+                    Admin Panel
+                  </a>
+                </div>
+              )}
+            </div>
           </header>
 
           <div className="grid items-center gap-10 md:grid-cols-[1.1fr_0.9fr]">
