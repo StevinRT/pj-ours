@@ -741,11 +741,9 @@ export default function Home() {
               <button
                 onClick={() => setMenuOpen((o) => !o)}
                 aria-label="Open menu"
-                className="flex h-9 w-9 flex-col items-center justify-center gap-1.5 rounded-full border border-white/10 bg-white/5 transition hover:bg-white/10"
+                className="flex h-11 w-11 items-center justify-center rounded-full border border-white/25 bg-white/10 text-xl text-white transition hover:bg-white/20"
               >
-                <span className="block h-0.5 w-4 bg-white" />
-                <span className="block h-0.5 w-4 bg-white" />
-                <span className="block h-0.5 w-4 bg-white" />
+                ☰
               </button>
               {menuOpen && (
                 <div className="absolute right-0 top-11 z-50 min-w-[160px] rounded-2xl border border-white/10 bg-zinc-900 py-2 shadow-2xl">
