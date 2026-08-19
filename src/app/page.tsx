@@ -629,7 +629,8 @@ export default function Home() {
                       <div className="flex items-center gap-2 rounded-full bg-black/20 px-2 py-1">
                         <button
                           onClick={() => updateQuantity(item.id, selectedSizeLabel, -1)}
-                          className="h-8 w-8 rounded-full bg-white/10 text-lg text-white"
+                          disabled={"available" in item && item.available === false}
+                          className="h-8 w-8 rounded-full bg-white/10 text-lg text-white disabled:cursor-not-allowed disabled:opacity-40"
                         >
                           −
                         </button>
@@ -638,7 +639,8 @@ export default function Home() {
                         </span>
                         <button
                           onClick={() => updateQuantity(item.id, selectedSizeLabel, 1)}
-                          className="h-8 w-8 rounded-full bg-white/10 text-lg text-white"
+                          disabled={"available" in item && item.available === false}
+                          className="h-8 w-8 rounded-full bg-white/10 text-lg text-white disabled:cursor-not-allowed disabled:opacity-40"
                         >
                           +
                         </button>
