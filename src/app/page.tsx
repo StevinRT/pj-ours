@@ -407,10 +407,9 @@ export default function Home() {
           </div>
         </div>
       )}
-      <section className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(251,191,36,0.22),_transparent_35%),radial-gradient(circle_at_bottom_right,_rgba(16,185,129,0.3),_transparent_40%)]" />
-        <div className="relative mx-auto flex max-w-7xl flex-col px-4 pb-12 pt-6 sm:px-6 lg:px-8">
-          <header className="mb-8 flex items-center justify-between rounded-full border border-white/10 bg-white/5 px-4 py-3 backdrop-blur md:px-6">
+      <div className="sticky top-0 z-30 bg-[#09090b]/80 px-4 py-3 backdrop-blur-md sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-7xl">
+          <header className="flex items-center justify-between rounded-full border border-white/10 bg-white/5 px-4 py-3 backdrop-blur md:px-6">
             <div className="flex items-center gap-3">
               <div className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-full bg-white/10">
                 <img
@@ -436,14 +435,12 @@ export default function Home() {
                 aria-label="Open menu"
                 className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-full border border-zinc-600 bg-zinc-800 transition hover:bg-zinc-700"
               >
-                {/* SVG bars: no font-fallback dependency, explicit fill */}
                 <svg width="20" height="15" viewBox="0 0 20 15" fill="none" aria-hidden="true">
                   <rect width="20" height="2.5" rx="1.25" fill="white" />
                   <rect y="6.25" width="20" height="2.5" rx="1.25" fill="white" />
                   <rect y="12.5" width="20" height="2.5" rx="1.25" fill="white" />
                 </svg>
               </button>
-              {/* fixed so section overflow-hidden cannot clip it */}
               {menuOpen && (
                 <div className="fixed right-4 top-[88px] z-[100] min-w-[160px] rounded-2xl border border-white/10 bg-zinc-900 py-2 shadow-2xl">
                   <a
@@ -457,7 +454,12 @@ export default function Home() {
               )}
             </div>
           </header>
+        </div>
+      </div>
 
+      <section className="relative overflow-hidden">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(251,191,36,0.22),_transparent_35%),radial-gradient(circle_at_bottom_right,_rgba(16,185,129,0.3),_transparent_40%)]" />
+        <div className="relative mx-auto flex max-w-7xl flex-col px-4 pb-12 pt-6 sm:px-6 lg:px-8">
           <div className="grid items-center gap-10 md:grid-cols-[1.1fr_0.9fr]">
             <motion.div
               initial={{ opacity: 0, y: 24 }}
