@@ -1,24 +1,11 @@
-"use client";
+﻿"use client";
 
 import { motion } from "framer-motion";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { createClient } from "@/lib/supabase/client";
-
-type MenuSize = {
-  label: string;
-  price: number;
-};
-
-type MenuItem = {
-  id: number;
-  name: string;
-  category: string;
-  emoji: string;
-  description: string;
-  badge: string;
-  sizes: MenuSize[];
-};
+import { bestSellerIds, menuCategories, menuItems } from "@/lib/menu";
+import type { MenuItem, MenuSize } from "@/lib/menu";
 
 type Branch = {
   id: string;
@@ -28,305 +15,6 @@ type Branch = {
   hours: string;
   coords: { lat: number; lng: number };
 };
-
-const menuSectionCatalog = [
-  {
-    category: "Fusion Shakes",
-    emoji: "🥤",
-    description: "For creamy fusion-style blends and premium take-home servings.",
-    badge: "Signature",
-    items: [
-      ["Apple Chickoo", [70, 135, 255]],
-      ["Apple Papaya", [70, 135, 255]],
-      ["Badam Pista", [70, 135, 255]],
-      ["Chickoo Chocolate", [70, 135, 255]],
-      ["Chickoo Sharjah", [70, 135, 255]],
-      ["Chickoo Custard Apple", [70, 135, 255]],
-      ["Chocolate Caramel", [70, 135, 255]],
-      ["Chocolate Oreo", [70, 135, 255]],
-      ["Chocolate Sharjah", [70, 135, 255]],
-      ["Grape Pineapple", [70, 135, 255]],
-      ["Kitkat Oreo", [70, 135, 255]],
-      ["Oreo Caramel", [70, 135, 255]],
-      ["Oreo Sharjah", [70, 135, 255]],
-      ["Papaya Chickoo", [70, 135, 255]],
-      ["Papaya Mango", [70, 135, 255]],
-      ["Papaya Sharjah", [70, 135, 255]],
-      ["Saudi Caramel", [70, 135, 255]],
-      ["Sharjah Saudi", [70, 135, 255]],
-      ["Tender Butter", [90, 175, 335]],
-      ["Tender Cashew", [100, 205, 400]],
-      ["Tender Chickoo", [90, 175, 335]],
-      ["Tender Dates", [90, 175, 335]],
-      ["Tender Mango", [90, 175, 335]],
-      ["Tender Caramel", [90, 175, 335]],
-      ["Tender Chocolate", [90, 175, 335]],
-      ["Avil Milk", [70]],
-    ],
-  },
-  {
-    category: "Milk Shake",
-    emoji: "🥭",
-    description: "Creamy milkshakes with a rich, blended feel.",
-    badge: "Creamy",
-    items: [
-      ["Apple", [60, 125, 250]],
-      ["Avocado", [70, 135, 255]],
-      ["Avocado Honey", [90, 185, 360]],
-      ["Badam", [50, 105, 200]],
-      ["Banana", [50, 105, 200]],
-      ["Blueberry", [70, 135, 260]],
-      ["Boost", [60, 125, 240]],
-      ["Brownie", [60, 125, 240]],
-      ["Butterscotch", [50, 105, 200]],
-      ["Caramel", [60, 125, 240]],
-      ["Cherry", [50, 105, 200]],
-      ["Chickoo", [60, 125, 240]],
-      ["Chocolate", [50, 105, 200]],
-      ["Coffee Blast", [60, 125, 240]],
-      ["Cold Coffee", [60, 125, 240]],
-      ["Custard Apple", [60, 125, 240]],
-      ["Dark Fantasy", [50, 105, 200]],
-      ["Dates (Saudi)", [50, 105, 200]],
-      ["Dragon Fruit", [60, 125, 250]],
-      ["Dry Fruits", [80, 165, 320]],
-      ["Grapes", [50, 105, 200]],
-      ["Guava", [50, 105, 200]],
-      ["Horlicks", [60, 125, 240]],
-      ["Ice Apple", [60, 125, 240]],
-      ["Malai Kulfi", [80, 165, 320]],
-      ["Kiwi", [90, 185, 360]],
-      ["Lotus", [60, 125, 240]],
-      ["Mango", [60, 125, 240]],
-      ["Mixed Fruit", [70, 135, 260]],
-      ["Muskmelon", [50, 105, 200]],
-      ["Oreo", [50, 105, 200]],
-      ["Papaya", [50, 105, 200]],
-      ["Peanut Butter", [80, 165, 320]],
-      ["Pineapple", [50, 105, 200]],
-      ["Pista", [50, 105, 200]],
-      ["Pomegranate (Anar)", [70, 135, 260]],
-      ["Strawberry", [60, 125, 240]],
-      ["Dry Fruits Special", [100, 205, 400]],
-      ["Vanila", [50, 105, 200]],
-      ["Tender Coconut", [70, 145, 280]],
-    ],
-  },
-  {
-    category: "Juice",
-    emoji: "🍊",
-    description: "Fresh juices squeezed for a clean, cooling sip.",
-    badge: "Fresh",
-    items: [
-      ["Anar", [70, 135, 260]],
-      ["Apple", [70, 135, 260]],
-      ["Carrot", [50, 105, 200]],
-      ["Cucumber", [40, 85, 160]],
-      ["Dragon Fruit", [60, 125, 250]],
-      ["Gooseberry", [70, 135, 260]],
-      ["Grape", [50, 105, 200]],
-      ["Guava Lemon", [50, 105, 200]],
-      ["Kiwi", [80, 165, 320]],
-      ["Lemon Fresh", [30, 65, 120]],
-      ["Lemon Grape", [50, 105, 200]],
-      ["Lemon Mint", [50, 105, 200]],
-      ["Lemon Pineapple", [50, 105, 200]],
-      ["Mango", [60, 125, 240]],
-      ["Mosambi", [60, 125, 240]],
-      ["Muskmelon", [50, 105, 200]],
-      ["Orange", [60, 125, 240]],
-      ["Orange Lemon", [60, 125, 240]],
-      ["Papaya", [50, 105, 200]],
-      ["Passion Fruit", [80, 165, 320]],
-      ["Pineapple", [60, 125, 240]],
-      ["Strawberry", [70, 135, 260]],
-      ["Watermelon", [50, 105, 200]],
-      ["Beetroot", [50, 105, 200]],
-      ["ABC", [90, 180, 350]],
-      ["Cucumber Lemon", [50, 105, 200]],
-      ["Cucumber Pineapple", [60, 125, 250]],
-      ["Cucumber Orange", [70, 135, 260]],
-    ],
-  },
-  {
-    category: "Ice Cream Shakes",
-    emoji: "🍨",
-    description: "Classic scoops, frozen favorites, and creamy coolers.",
-    badge: "Frozen",
-    items: [
-      ["Black Currant", [100]],
-      ["Butterscotch", [100]],
-      ["Choco Chips", [100]],
-      ["Chocolate", [100]],
-      ["English Delight", [100]],
-      ["Fig Dates And Honey", [100]],
-      ["Mango", [100]],
-      ["Mocha", [100]],
-      ["Pineapple", [100]],
-      ["Pista", [100]],
-      ["Red Velvet", [100]],
-      ["Strawberry", [100]],
-      ["Vancho", [100]],
-      ["Vanila", [100]],
-    ],
-  },
-  {
-    category: "Mastani",
-    emoji: "🍦",
-    description: "Thick, indulgent mastani pours and galaxy blends.",
-    badge: "Indulgent",
-    items: [
-      ["Banana Mastani", [110]],
-      ["Mango Mastani", [110]],
-      ["Papaya Mastani", [110]],
-      ["Pineapple Mastani", [110]],
-      ["Avocado Galaxy", [110]],
-      ["Banana Galaxy", [110]],
-      ["Caramel Galaxy", [110]],
-      ["Chickoo Galaxy", [110]],
-      ["Grape Galaxy", [110]],
-      ["Mango Galaxy", [110]],
-      ["Oreo Galaxy", [110]],
-      ["Papaya Galaxy", [110]],
-      ["Pineapple Galaxy", [110]],
-      ["Saudi Galaxy", [110]],
-      ["Tender Galaxy", [110]],
-    ],
-  },
-  {
-    category: "Mojito",
-    emoji: "🌿",
-    description: "Minty, sparkling mojitos with lively fruit notes.",
-    badge: "Cool",
-    items: [
-      ["Blue Curacao", [80]],
-      ["Blueberry", [80]],
-      ["Green Apple", [80]],
-      ["Green Seed", [80]],
-      ["Hot Gooseberry (spicy)", [80]],
-      ["Kiwi", [80]],
-      ["Litchi", [80]],
-      ["Mango Slice", [80]],
-      ["Mexican", [80]],
-      ["Mint", [80]],
-      ["Red Flame", [80]],
-      ["Red Freeze", [80]],
-      ["Valencia (Orange)", [80]],
-      ["Virgin", [60]],
-      ["Wineyard (Grape)", [80]],
-      ["Yellow Flower (Pineapple)", [80]],
-    ],
-  },
-  {
-    category: "Mocktail",
-    emoji: "🍓",
-    description: "Fruity mocktails with a lively, refreshing finish.",
-    badge: "Sparkling",
-    items: [
-      ["Carrot Pineapple", [70, 135, 255]],
-      ["Grape Pineapple", [70, 135, 255]],
-      ["Mosambi Orange", [70, 135, 255]],
-      ["Papaya Pineapple", [70, 135, 255]],
-      ["Papaya Carrot", [70, 135, 255]],
-      ["Shamam Mango", [70, 135, 255]],
-      ["Shamam Papaya", [70, 135, 255]],
-      ["Water Melon Carrot", [70, 135, 255]],
-    ],
-  },
-  {
-    category: "Fruit Soda",
-    emoji: "🧃",
-    description: "Fruit sodas that are crisp, fizzy, and refreshing.",
-    badge: "Bubbly",
-    items: [
-      ["Anar Soda", [50]],
-      ["Apple Soda", [50]],
-      ["Carrot Soda", [50]],
-      ["Grape Soda", [50]],
-      ["Guava Soda", [50]],
-      ["Mango Soda", [50]],
-      ["Mosambi Soda", [50]],
-      ["Orange Soda", [50]],
-      ["Passion Fruit Soda", [60]],
-      ["Pineapple Soda", [50]],
-      ["Shaman Soda", [50]],
-    ],
-  },
-  {
-    category: "Falooda",
-    emoji: "🍹",
-    description: "Layered falooda cups and dessert-style pours.",
-    badge: "Layered",
-    items: [
-      ["Cake Falooda", [175]],
-      ["Chocolate Falooda", [170]],
-      ["Dry Fruits Falooda", [200]],
-      ["Gulab Jamun Falooda", [175]],
-      ["Mango Falooda", [160]],
-      ["Royal Falooda", [160]],
-      ["Royal Falooda Special", [190]],
-      ["Strawberry Falooda", [160]],
-      ["Pineapple Falooda", [160]],
-      ["Fruit Punch Falooda", [170]],
-      ["Kulfi Falooda", [170]],
-      ["Hawaiian Fresh Fruit Salad", [120]],
-    ],
-  },
-  {
-    category: "Ice Cream Desserts",
-    emoji: "🍫",
-    description: "Rich shakes layered with cookie and ice cream notes.",
-    badge: "Rich",
-    items: [
-      ["Chocolate Brownie Magic", [150]],
-      ["Caramel Mocha Sundae", [150]],
-      ["Double Chocolate Cookie Fiesta", [150]],
-      ["Dry Fruits with Cake", [150]],
-      ["Wafer Crown with Cookie", [150]],
-      ["Dark Vanilla with Coffee Fills", [150]],
-      ["Fruit Salad with Ice Cream", [90]],
-    ],
-  },
-  {
-    category: "Desserts",
-    emoji: "🍰",
-    description: "Sweet desserts and sizzlers to end on a tasty note.",
-    badge: "Sweet",
-    items: [
-      ["Fruit Salad", [70]],
-      ["Sizzling Brownie", [140]],
-      ["Chocolate Sizzler", [180]],
-      ["Strawberry Sizzler", [180]],
-      ["Single Scoop", [50]],
-      ["Double Scoop", [80]],
-    ],
-  },
-] as const;
-
-const menuItems: MenuItem[] = menuSectionCatalog.flatMap((section, sectionIndex) =>
-  section.items.map(([name, prices], itemIndex) => {
-    const priceList = [...prices] as number[];
-    const sizeLabels =
-      priceList.length >= 3
-        ? ["Regular", "500 ML", "1 Liter"]
-        : priceList.length === 2
-          ? ["500 ML", "1 Liter"]
-          : ["Regular"];
-
-    return {
-      id: sectionIndex * 100 + itemIndex + 1,
-      name,
-      category: section.category,
-      emoji: section.emoji,
-      description: section.description,
-      badge: section.badge,
-      sizes: priceList.map((price, sizeIndex) => ({
-        label: sizeLabels[sizeIndex] ?? `Size ${sizeIndex + 1}`,
-        price,
-      })),
-    };
-  }),
-);
 
 const branches: Branch[] = [
   {
@@ -347,8 +35,7 @@ const branches: Branch[] = [
   },
 ];
 
-const categories = ["All", ...new Set(menuItems.map((item) => item.category))];
-const bestSellerIds = [1, 5, 12];
+const categories = menuCategories;
 
 const getDistanceKm = (lat1: number, lng1: number, lat2: number, lng2: number) => {
   const toRad = (value: number) => (value * Math.PI) / 180;
@@ -562,7 +249,7 @@ export default function Home() {
       const id = ++flyIdRef.current;
       setFlyingEmojis((prev) => [
         ...prev,
-        { id, emoji: emoji ?? "🥤", x: startX, y: startY, dx: endX - startX, dy: endY - startY },
+        { id, emoji: emoji ?? "ðŸ¥¤", x: startX, y: startY, dx: endX - startX, dy: endY - startY },
       ]);
 
       // bounce the cart after the emoji arrives (~620ms)
@@ -643,11 +330,11 @@ export default function Home() {
     }
 
     const orderLines = cartItems.map(
-      (item) => `${item.quantity} × ${item.name} (${item.sizeLabel}) ₹${item.price * item.quantity}`,
+      (item) => `${item.quantity} Ã— ${item.name} (${item.sizeLabel}) â‚¹${item.price * item.quantity}`,
     );
 
     const message = [
-      "🍹 PJ OURS PICKUP ORDER",
+      "ðŸ¹ PJ OURS PICKUP ORDER",
       "",
       `Customer: ${checkout.name || "Guest"}`,
       `Phone: ${checkout.phone || "Not provided"}`,
@@ -661,10 +348,10 @@ export default function Home() {
       ...orderLines,
       "",
       `Order type: ${orderType === "parcel" ? "Parcel" : "Dine In"}`,
-      `Packing charge: ₹${packingCharge}`,
+      `Packing charge: â‚¹${packingCharge}`,
       "",
       "Total:",
-      `₹${finalTotal}`,
+      `â‚¹${finalTotal}`,
       "",
       "Notes:",
       specialInstructions || checkout.notes || "No special instructions.",
@@ -682,7 +369,7 @@ export default function Home() {
 
   return (
     <main className="min-h-screen bg-[#09090b] pb-24 text-white lg:pb-0">
-      {/* flying emoji particles – rendered at fixed positions over entire viewport */}
+      {/* flying emoji particles â€“ rendered at fixed positions over entire viewport */}
       {flyingEmojis.map((fe) => (
         <span
           key={fe.id}
@@ -707,13 +394,13 @@ export default function Home() {
                 onClick={() => setOrderType("dine-in")}
                 className="rounded-2xl border border-white/15 bg-white/5 px-4 py-3 text-left text-lg font-semibold transition hover:bg-white/10"
               >
-                🍽️ Dine In
+                ðŸ½ï¸ Dine In
               </button>
               <button
                 onClick={() => setOrderType("parcel")}
                 className="rounded-2xl border border-white/15 bg-white/5 px-4 py-3 text-left text-lg font-semibold transition hover:bg-white/10"
               >
-                📦 Parcel
+                ðŸ“¦ Parcel
               </button>
             </div>
             <p className="mt-4 text-sm text-zinc-300">Please select one option to continue.</p>
@@ -827,11 +514,11 @@ export default function Home() {
             >
               <div className="grid min-h-[420px] grid-cols-2 gap-3">
                 <div className="rounded-[1.5rem] bg-gradient-to-br from-amber-300 to-orange-500 p-6 text-black">
-                  <div className="text-6xl">🥤</div>
+                  <div className="text-6xl">ðŸ¥¤</div>
                   <p className="mt-4 text-sm font-bold uppercase">Freshly blended</p>
                 </div>
                 <div className="rounded-[1.5rem] bg-gradient-to-br from-cyan-300 to-sky-500 p-6 text-slate-950">
-                  <div className="text-6xl">🍹</div>
+                  <div className="text-6xl">ðŸ¹</div>
                   <p className="mt-4 text-sm font-bold uppercase">Cool & vibrant</p>
                 </div>
                 <div className="col-span-2 rounded-[1.5rem] bg-black/30 p-6">
@@ -846,7 +533,7 @@ export default function Home() {
                         <div key={item.id} className="rounded-2xl bg-white/5 p-3 text-center">
                           <div className="text-3xl">{item.emoji}</div>
                           <p className="mt-2 font-semibold">{item.name}</p>
-                          <p className="text-sm text-zinc-300">₹{item.sizes[0]?.price ?? 0}</p>
+                          <p className="text-sm text-zinc-300">â‚¹{item.sizes[0]?.price ?? 0}</p>
                         </div>
                       ))}
                   </div>
@@ -914,7 +601,7 @@ export default function Home() {
                         {"available" in item && item.available === false ? (
                           <p className="text-sm font-semibold text-rose-300">Out of Stock</p>
                         ) : null}
-                        <p className="text-lg font-bold text-amber-300">₹{selectedSize?.price ?? 0}</p>
+                        <p className="text-lg font-bold text-amber-300">â‚¹{selectedSize?.price ?? 0}</p>
                       </div>
 
                       <div className="mt-4 grid grid-cols-2 gap-2">
@@ -931,7 +618,7 @@ export default function Home() {
                             }`}
                           >
                             <div className="font-semibold">{size.label}</div>
-                            <div className="text-[11px] text-zinc-300">₹{size.price}</div>
+                            <div className="text-[11px] text-zinc-300">â‚¹{size.price}</div>
                           </button>
                         ))}
                       </div>
@@ -942,7 +629,7 @@ export default function Home() {
                           onClick={() => updateQuantity(item.id, selectedSizeLabel, -1)}
                           className="h-8 w-8 rounded-full bg-white/10 text-lg text-white"
                         >
-                          −
+                          âˆ’
                         </button>
                         <span className="min-w-6 text-center text-sm font-semibold">
                           {getItemQuantity(item.id)}
@@ -979,7 +666,7 @@ export default function Home() {
                 <h2 className="mt-2 text-2xl font-bold">Your order</h2>
               </div>
               <div className={`rounded-full bg-amber-400/15 px-3 py-1 text-sm font-semibold text-amber-200 ${cartBounce ? "cart-bounce" : ""}`}>
-                Total ₹{finalTotal}
+                Total â‚¹{finalTotal}
               </div>
             </div>
 
@@ -992,7 +679,7 @@ export default function Home() {
                     orderType === "dine-in" ? "bg-amber-400 text-black" : "bg-white/10 text-white"
                   }`}
                 >
-                  🍽️ Dine In
+                  ðŸ½ï¸ Dine In
                 </button>
                 <button
                   onClick={() => setOrderType("parcel")}
@@ -1000,7 +687,7 @@ export default function Home() {
                     orderType === "parcel" ? "bg-amber-400 text-black" : "bg-white/10 text-white"
                   }`}
                 >
-                  📦 Parcel
+                  ðŸ“¦ Parcel
                 </button>
               </div>
             </div>
@@ -1017,7 +704,7 @@ export default function Home() {
                       <div>
                         <p className="font-semibold">{item.name}</p>
                         <p className="text-sm text-zinc-300">
-                          {item.sizeLabel} • ₹{item.price} each
+                          {item.sizeLabel} â€¢ â‚¹{item.price} each
                         </p>
                       </div>
                       <button
@@ -1032,7 +719,7 @@ export default function Home() {
                         onClick={() => updateQuantity(item.id, item.sizeLabel, -1)}
                         className="h-8 w-8 rounded-full bg-white/10 text-lg"
                       >
-                        −
+                        âˆ’
                       </button>
                       <span className="min-w-8 text-center">{item.quantity}</span>
                       <button
@@ -1042,7 +729,7 @@ export default function Home() {
                         +
                       </button>
                       <span className="ml-auto font-semibold text-amber-300">
-                        ₹{item.price * item.quantity}
+                        â‚¹{item.price * item.quantity}
                       </span>
                     </div>
                   </div>
@@ -1053,16 +740,16 @@ export default function Home() {
             <div className="mt-4 rounded-2xl border border-white/10 bg-black/20 p-4 text-sm">
               <div className="flex items-center justify-between text-zinc-300">
                 <span>Subtotal</span>
-                <span>₹{subtotal}</span>
+                <span>â‚¹{subtotal}</span>
               </div>
               <div className="mt-2 flex items-center justify-between text-zinc-300">
-                <span>Packing charge (₹5 × {totalItems} items)</span>
-                <span>₹{packingCharge}</span>
+                <span>Packing charge (â‚¹5 Ã— {totalItems} items)</span>
+                <span>â‚¹{packingCharge}</span>
               </div>
               <div className="mt-3 border-t border-white/10 pt-3 text-base font-semibold text-amber-200">
                 <div className="flex items-center justify-between">
                   <span>Final total</span>
-                  <span>₹{finalTotal}</span>
+                  <span>â‚¹{finalTotal}</span>
                 </div>
               </div>
             </div>
@@ -1093,7 +780,7 @@ export default function Home() {
           href="#order-summary"
           className={`flex items-center justify-between rounded-2xl bg-amber-400 px-4 py-3 font-semibold text-black ${cartBounce ? "cart-bounce" : ""}`}
         >
-          <span>{totalItems} items • ₹{finalTotal}</span>
+          <span>{totalItems} items â€¢ â‚¹{finalTotal}</span>
           <span>View Cart</span>
         </a>
       </div>
@@ -1186,7 +873,7 @@ export default function Home() {
                 >
                   <div className="flex items-center justify-between gap-3">
                     <div>
-                      <p className="font-semibold">📍 {branch.name}</p>
+                      <p className="font-semibold">ðŸ“ {branch.name}</p>
                       <p className="text-sm text-zinc-300">{branch.hours}</p>
                     </div>
                     <div className="text-xs text-zinc-200">
@@ -1216,7 +903,7 @@ export default function Home() {
               disabled={isPlacingOrder || !cartItems.length || orderType === null}
               className="mt-5 w-full rounded-full bg-emerald-400 px-5 py-3 font-semibold text-black transition hover:bg-emerald-300 disabled:cursor-not-allowed disabled:bg-zinc-700 disabled:text-zinc-300"
             >
-              {isPlacingOrder ? "Placing order…" : "Send order to WhatsApp"}
+              {isPlacingOrder ? "Placing orderâ€¦" : "Send order to WhatsApp"}
             </button>
           </div>
         </div>
@@ -1231,7 +918,7 @@ export default function Home() {
           </div>
           <div className="rounded-[1.6rem] border border-white/10 bg-white/5 p-5">
             <p className="text-sm font-semibold uppercase tracking-[0.35em] text-amber-300">Reviews</p>
-            <h3 className="mt-2 text-2xl font-bold">“Fast, fresh, and fun.”</h3>
+            <h3 className="mt-2 text-2xl font-bold">â€œFast, fresh, and fun.â€</h3>
             <p className="mt-2 text-zinc-300">Customers love the premium vibe, smooth ordering, and fresh pickup experience.</p>
           </div>
           <div className="rounded-[1.6rem] border border-white/10 bg-white/5 p-5">
@@ -1243,7 +930,7 @@ export default function Home() {
       </section>
 
       <footer className="border-t border-white/10 px-4 py-8 text-center text-sm text-zinc-400 sm:px-6 lg:px-8">
-        PJ Ours • Premium juice, shake, and pickup ordering.
+        PJ Ours â€¢ Premium juice, shake, and pickup ordering.
       </footer>
     </main>
   );
