@@ -471,7 +471,7 @@ export default function Home() {
                 Premium juice & shake pickup experience
               </span>
               <div className="space-y-4">
-                <h1 className="text-5xl font-black leading-tight sm:text-6xl">
+                <h1 className="text-[2.1rem] font-black leading-[1.15] tracking-tight sm:text-5xl lg:text-6xl">
                   Fresh blends made for the fastest pickup orders.
                 </h1>
                 <p className="max-w-xl text-lg text-zinc-300">
