@@ -97,14 +97,21 @@ export default function LiveOrders({ onPunchOrder }: { onPunchOrder: () => void 
   const initialIdsRef = useRef<Set<string>>(new Set());
 
   useEffect(() => {
+    const channelName = `orders-live-${crypto.randomUUID()}`;
     const supabase = createClient();
 
+    console.log("[LiveOrders] mounting — project URL:", process.env.NEXT_PUBLIC_SUPABASE_URL);
+    console.log("[LiveOrders] creating Realtime channel:", channelName);
+
     const loadOrders = async () => {
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from("orders")
         .select("*")
         .in("status", ["new", "preparing", "ready"])
         .order("created_at", { ascending: false });
+
+      if (error) console.error("[LiveOrders] initial fetch error:", error);
+      console.log("[LiveOrders] initial fetch returned", data?.length ?? 0, "orders");
 
       const loaded = (data ?? []).map((row) => mapOrder(row as unknown as RawOrder));
       setOrders(loaded);
@@ -114,16 +121,18 @@ export default function LiveOrders({ onPunchOrder }: { onPunchOrder: () => void 
 
     void loadOrders();
 
-    // Unique channel name per mount avoids duplicate-channel issues in React StrictMode
     const channel = supabase
-      .channel(`orders-live-${crypto.randomUUID()}`)
+      .channel(channelName)
       .on(
         "postgres_changes",
         { event: "*", schema: "public", table: "orders" },
         (payload) => {
+          console.log("[LiveOrders] Realtime event:", payload.eventType, payload);
           if (payload.eventType === "INSERT") {
             const incoming = mapOrder(payload.new as unknown as RawOrder);
-            if (["new", "preparing", "ready"].includes(incoming.status)) {
+            const willShow = ["new", "preparing", "ready"].includes(incoming.status);
+            console.log("[LiveOrders] INSERT id:", incoming.id, "status:", incoming.status, "→ show:", willShow);
+            if (willShow) {
               setOrders((prev) => [incoming, ...prev]);
               if (!initialIdsRef.current.has(incoming.id)) {
                 setNewOrderIds((prev) => new Set(prev).add(incoming.id));
@@ -131,7 +140,9 @@ export default function LiveOrders({ onPunchOrder }: { onPunchOrder: () => void 
             }
           } else if (payload.eventType === "UPDATE") {
             const updated = mapOrder(payload.new as unknown as RawOrder);
-            if (!["new", "preparing", "ready"].includes(updated.status)) {
+            const isActive = ["new", "preparing", "ready"].includes(updated.status);
+            console.log("[LiveOrders] UPDATE id:", updated.id, "status:", updated.status, "→ keep:", isActive);
+            if (!isActive) {
               setOrders((prev) => prev.filter((o) => o.id !== updated.id));
               setNewOrderIds((prev) => {
                 const s = new Set(prev);
@@ -143,6 +154,7 @@ export default function LiveOrders({ onPunchOrder }: { onPunchOrder: () => void 
             }
           } else if (payload.eventType === "DELETE") {
             const deleted = payload.old as { id: string };
+            console.log("[LiveOrders] DELETE id:", deleted.id);
             setOrders((prev) => prev.filter((o) => o.id !== deleted.id));
             setNewOrderIds((prev) => {
               const s = new Set(prev);
@@ -152,9 +164,16 @@ export default function LiveOrders({ onPunchOrder }: { onPunchOrder: () => void 
           }
         },
       )
-      .subscribe();
+      .subscribe((status, err) => {
+        if (err) {
+          console.error("[LiveOrders] subscription error:", err);
+        } else {
+          console.log("[LiveOrders] subscription status:", status);
+        }
+      });
 
     return () => {
+      console.log("[LiveOrders] cleanup — removing channel:", channelName);
       void supabase.removeChannel(channel);
     };
   }, []);
