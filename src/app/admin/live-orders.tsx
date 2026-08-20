@@ -114,15 +114,16 @@ export default function LiveOrders({ onPunchOrder }: { onPunchOrder: () => void 
 
     void loadOrders();
 
+    // Unique channel name per mount avoids duplicate-channel issues in React StrictMode
     const channel = supabase
-      .channel("orders-live")
+      .channel(`orders-live-${crypto.randomUUID()}`)
       .on(
         "postgres_changes",
         { event: "*", schema: "public", table: "orders" },
         (payload) => {
           if (payload.eventType === "INSERT") {
             const incoming = mapOrder(payload.new as unknown as RawOrder);
-            if (incoming.status === "active") {
+            if (["new", "preparing", "ready"].includes(incoming.status)) {
               setOrders((prev) => [incoming, ...prev]);
               if (!initialIdsRef.current.has(incoming.id)) {
                 setNewOrderIds((prev) => new Set(prev).add(incoming.id));
