@@ -18,6 +18,9 @@ create table if not exists public.daily_sales (
   updated_at       timestamptz not null default now()
 );
 
+-- Ensure updated_at exists if the table was created without it
+alter table public.daily_sales add column if not exists updated_at timestamptz not null default now();
+
 -- 2. RLS ----------------------------------------------------
 alter table public.daily_sales enable row level security;
 
