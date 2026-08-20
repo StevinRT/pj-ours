@@ -3,6 +3,45 @@ export type Json = string | number | boolean | null | { [key: string]: Json | un
 export type Database = {
   public: {
     Tables: {
+      daily_sales: {
+        Row: {
+          id: string;
+          sale_date: string;
+          total_orders: number;
+          total_sales: number;
+          cash_sales: number;
+          upi_sales: number;
+          card_sales: number;
+          east_fort_sales: number;
+          west_fort_sales: number;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          sale_date: string;
+          total_orders?: number;
+          total_sales?: number;
+          cash_sales?: number;
+          upi_sales?: number;
+          card_sales?: number;
+          east_fort_sales?: number;
+          west_fort_sales?: number;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          sale_date?: string;
+          total_orders?: number;
+          total_sales?: number;
+          cash_sales?: number;
+          upi_sales?: number;
+          card_sales?: number;
+          east_fort_sales?: number;
+          west_fort_sales?: number;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
       orders: {
         Row: {
           id: string;
@@ -104,7 +143,16 @@ export type Database = {
       };
     };
     Views: Record<string, never>;
-    Functions: Record<string, never>;
+    Functions: {
+      reconcile_daily_sales: {
+        Args: Record<string, never>;
+        Returns: undefined;
+      };
+      cleanup_old_orders: {
+        Args: Record<string, never>;
+        Returns: number;
+      };
+    };
     Enums: Record<string, never>;
     CompositeTypes: Record<string, never>;
   };
