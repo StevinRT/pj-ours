@@ -436,7 +436,7 @@ export default function Home() {
               </div>
               <div>
                 <p className="text-sm font-semibold tracking-[0.3em] text-amber-300">PJ OURS</p>
-                <p className="text-xs text-zinc-300">Pickup Ordering</p>
+                <p className="text-xs text-zinc-300">Freshness, Made Yours.🌟</p>
               </div>
             </div>
             <div className="relative flex items-center gap-2">
