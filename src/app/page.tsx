@@ -504,8 +504,8 @@ export default function Home() {
                 </a>
               </div>
               <div className="grid gap-3">
-                <div className="inline-flex w-fit items-center gap-3 rounded-2xl border border-emerald-500/25 bg-emerald-950/30 px-5 py-3.5 shadow-[inset_0_1px_0_rgba(52,211,153,0.1)]">
-                  <p className="text-2xl font-black text-emerald-300">5 min</p>
+                <div className="inline-flex w-fit items-center gap-3 rounded-2xl border border-amber-400/35 bg-amber-950/40 px-5 py-3.5 shadow-[inset_0_1px_0_rgba(251,191,36,0.15)]">
+                  <p className="text-2xl font-black text-amber-300">5 min</p>
                   <p className="text-sm text-zinc-300">Quick checkout flow</p>
                 </div>
               </div>
