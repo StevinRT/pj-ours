@@ -276,8 +276,26 @@ export const generateEscPosBill = (order: PrintOrder): Uint8Array => {
   str('Visit us again'); lf();
   push(0x1b, 0x61, 0x00);
 
-  push(0x1b, 0x64, 0x04);                   // feed 4 lines
-  push(0x1d, 0x56, 0x41, 0x05);             // partial cut
+  push(0x1b, 0x64, 0x04);                   // feed 4 lines for tear-off
 
   return new Uint8Array(b);
+};
+
+// Sends raw ESC/POS bytes to a local bridge server, falls back to browser Print Service.
+// Bridge: POST http://localhost:9100/print  (application/octet-stream)
+// A native Android companion app must run the bridge to enable direct thermal printing.
+export const printThermalBill = async (order: PrintOrder): Promise<void> => {
+  const bytes = generateEscPosBill(order);
+  try {
+    const res = await fetch('http://localhost:9100/print', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/octet-stream' },
+      body: new Blob([bytes.buffer as ArrayBuffer], { type: 'application/octet-stream' }),
+      signal: AbortSignal.timeout(3000),
+    });
+    if (!res.ok) throw new Error(`bridge ${res.status}`);
+  } catch {
+    // Bridge not available — fall back to Android Print Service (PDF) path
+    printBill(order);
+  }
 };
