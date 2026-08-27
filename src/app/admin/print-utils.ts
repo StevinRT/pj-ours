@@ -18,67 +18,34 @@ export type PrintOrder = {
   created_at: string;
 };
 
-const THERMAL_CSS = `
-@page { size: 58mm auto; margin: 0; }
-* { box-sizing: border-box; margin: 0; padding: 0; }
-html, body {
-  width: 58mm !important;
-  margin: 0 !important;
-  padding: 0 !important;
-  background: white !important;
-  font-family: 'Courier New', Courier, monospace;
-  font-size: 11px;
-  line-height: 1.25;
-  color: #000;
-}
-.receipt {
-  width: 58mm;
-  max-width: 58mm;
-  box-sizing: border-box;
-  margin: 0;
-  padding: 3mm 3mm 5mm 3mm;
-  overflow: visible;
-  color: #000;
-  background: #fff;
-}
-.center { text-align: center; }
-.bold   { font-weight: bold; }
-.lg     { font-size: 13px; }
-.sm     { font-size: 9px; }
-hr { border: none; border-top: 1px dashed #000; margin: 3px 0; }
-/* Two-column totals row as a table — avoids flex pagination quirks on Android Chrome */
-.row { width: 100%; border-collapse: collapse; }
-.row td:last-child { text-align: right; white-space: nowrap; }
-/* Fixed-column item table — item name wraps, amount stays on paper */
-.items { width: 100%; border-collapse: collapse; table-layout: fixed; }
-.col-name { width: 52%; }
-.col-qty  { width: 14%; }
-.col-amt  { width: 34%; }
-.items th { text-align: left; font-weight: bold; padding-bottom: 2px; font-size: 9px; }
-.items .c { text-align: center; }
-.items .r { text-align: right; white-space: nowrap; }
-.items td { vertical-align: top; padding: 1px 0; word-break: break-word; overflow-wrap: anywhere; }
-@media print {
-  @page {
-    size: 58mm auto;
-    margin: 0 !important;
-  }
-  html, body {
-    width: 58mm !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    background: #fff !important;
-  }
-  .receipt {
-    width: 58mm !important;
-    max-width: 58mm !important;
-    margin: 0 !important;
-    padding: 3mm 3mm 5mm 3mm !important;
-    box-sizing: border-box !important;
-    overflow: visible !important;
-  }
-}
-`;
+// Scoped print CSS — injected into the main document, so all rules are
+// constrained to #thermal-receipt and wrapped in @media print.
+const PRINT_CSS = `
+@page{size:58mm auto;margin:0}
+#thermal-receipt{display:none}
+@media print{
+@page{size:58mm auto;margin:0!important}
+body>*:not(#thermal-receipt){display:none!important}
+#thermal-receipt{display:block!important}
+html,body{width:58mm!important;margin:0!important;padding:0!important;background:#fff!important;font-family:'Courier New',Courier,monospace;font-size:11px;line-height:1.25;color:#000}
+#thermal-receipt *{box-sizing:border-box;margin:0;padding:0}
+#thermal-receipt .receipt{width:58mm;max-width:58mm;box-sizing:border-box;margin:0;padding:3mm 3mm 5mm 3mm;overflow:visible;color:#000;background:#fff}
+#thermal-receipt .center{text-align:center}
+#thermal-receipt .bold{font-weight:bold}
+#thermal-receipt .lg{font-size:13px}
+#thermal-receipt .sm{font-size:9px}
+#thermal-receipt hr{border:none;border-top:1px dashed #000;margin:3px 0}
+#thermal-receipt .row{width:100%;border-collapse:collapse}
+#thermal-receipt .row td:last-child{text-align:right;white-space:nowrap}
+#thermal-receipt .items{width:100%;border-collapse:collapse;table-layout:fixed}
+#thermal-receipt .col-name{width:52%}
+#thermal-receipt .col-qty{width:14%}
+#thermal-receipt .col-amt{width:34%}
+#thermal-receipt .items th{text-align:left;font-weight:bold;padding-bottom:2px;font-size:9px}
+#thermal-receipt .items .c{text-align:center}
+#thermal-receipt .items .r{text-align:right;white-space:nowrap}
+#thermal-receipt .items td{vertical-align:top;padding:1px 0;word-break:break-word;overflow-wrap:anywhere}
+}`;
 
 const MONTHS = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
 
@@ -98,38 +65,31 @@ const fmtTime = (s: string) => {
 };
 
 const openPrint = (title: string, html: string) => {
-  // Hidden iframe keeps the user on the admin page — no popup / about:blank tab
-  const iframe = document.createElement('iframe');
-  iframe.style.cssText = 'position:fixed;top:-9999px;left:-9999px;width:58mm;height:1px;border:0;';
-  document.body.appendChild(iframe);
+  // Inject receipt into the current document so window.print() can be called
+  // synchronously within the user gesture — required by Android Chrome.
+  const prevTitle = document.title;
+  document.title = title;
 
-  const doc = iframe.contentDocument ?? iframe.contentWindow?.document;
-  if (!doc) { document.body.removeChild(iframe); return; }
+  const root = document.createElement('div');
+  root.id = 'thermal-receipt';
+  root.innerHTML = `<div class="receipt">${html}</div>`;
+  document.body.appendChild(root);
 
-  doc.open();
-  doc.write(
-    `<!DOCTYPE html><html><head><meta charset="utf-8"><title>${title}</title><style>${THERMAL_CSS}</style></head><body><div class="receipt">${html}</div></body></html>`
-  );
-  doc.close();
+  const style = document.createElement('style');
+  style.textContent = PRINT_CSS;
+  document.head.appendChild(style);
 
-  const doPrint = () => {
-    iframe.contentWindow?.focus();
-    iframe.contentWindow?.print();
-    // afterprint fires when the print dialog closes or is cancelled
-    const cleanup = () => {
-      iframe.contentWindow?.removeEventListener('afterprint', cleanup);
-      if (document.body.contains(iframe)) document.body.removeChild(iframe);
-    };
-    iframe.contentWindow?.addEventListener('afterprint', cleanup);
-    // fallback removal in case afterprint does not fire on this browser/version
-    setTimeout(cleanup, 60_000);
+  const cleanup = () => {
+    window.removeEventListener('afterprint', cleanup);
+    document.title = prevTitle;
+    if (document.body.contains(root)) document.body.removeChild(root);
+    if (document.head.contains(style)) document.head.removeChild(style);
   };
+  window.addEventListener('afterprint', cleanup);
+  // afterprint may not fire on all Android Chrome versions
+  setTimeout(cleanup, 60_000);
 
-  if (doc.readyState === 'complete') {
-    setTimeout(doPrint, 100);
-  } else {
-    iframe.addEventListener('load', doPrint);
-  }
+  window.print();
 };
 
 export const printBill = (order: PrintOrder) => {
