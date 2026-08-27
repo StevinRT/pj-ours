@@ -98,19 +98,37 @@ const fmtTime = (s: string) => {
 };
 
 const openPrint = (title: string, html: string) => {
-  const win = window.open('', '_blank', 'width=240,height=600');
-  if (!win) { alert('Allow pop-ups to print.'); return; }
-  win.document.write(
-    `<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=220,initial-scale=1"><title>${title}</title><style>${THERMAL_CSS}</style></head><body><div class="receipt">${html}</div></body></html>`
+  // Hidden iframe keeps the user on the admin page — no popup / about:blank tab
+  const iframe = document.createElement('iframe');
+  iframe.style.cssText = 'position:fixed;top:-9999px;left:-9999px;width:58mm;height:1px;border:0;';
+  document.body.appendChild(iframe);
+
+  const doc = iframe.contentDocument ?? iframe.contentWindow?.document;
+  if (!doc) { document.body.removeChild(iframe); return; }
+
+  doc.open();
+  doc.write(
+    `<!DOCTYPE html><html><head><meta charset="utf-8"><title>${title}</title><style>${THERMAL_CSS}</style></head><body><div class="receipt">${html}</div></body></html>`
   );
-  win.document.close();
-  win.focus();
-  // document.write is synchronous; readyState is already 'complete', so a short delay is sufficient
-  const doPrint = () => { win.print(); };
-  if (win.document.readyState === 'complete') {
-    setTimeout(doPrint, 250);
+  doc.close();
+
+  const doPrint = () => {
+    iframe.contentWindow?.focus();
+    iframe.contentWindow?.print();
+    // afterprint fires when the print dialog closes or is cancelled
+    const cleanup = () => {
+      iframe.contentWindow?.removeEventListener('afterprint', cleanup);
+      if (document.body.contains(iframe)) document.body.removeChild(iframe);
+    };
+    iframe.contentWindow?.addEventListener('afterprint', cleanup);
+    // fallback removal in case afterprint does not fire on this browser/version
+    setTimeout(cleanup, 60_000);
+  };
+
+  if (doc.readyState === 'complete') {
+    setTimeout(doPrint, 100);
   } else {
-    win.addEventListener('load', doPrint);
+    iframe.addEventListener('load', doPrint);
   }
 };
 
