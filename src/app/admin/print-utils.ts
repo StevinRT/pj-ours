@@ -19,22 +19,28 @@ export type PrintOrder = {
 };
 
 const THERMAL_CSS = `
-@page { size: 58mm auto; margin: 2mm 3mm; }
+@page { size: 58mm auto; margin: 0; }
 * { box-sizing: border-box; margin: 0; padding: 0; }
-body {
-  width: 52mm;
+html, body {
+  width: 58mm;
+  max-width: 58mm;
   font-family: 'Courier New', Courier, monospace;
   font-size: 10pt;
   line-height: 1.35;
   color: #000;
   background: #fff;
 }
+.receipt { width: 58mm; max-width: 58mm; padding: 2mm 3mm; }
 .center { text-align: center; }
 .bold { font-weight: bold; }
 .lg { font-size: 12pt; }
 .sm { font-size: 8.5pt; }
-hr { border: none; border-top: 1px dashed #000; margin: 4px 0; }
-.row { display: flex; justify-content: space-between; }
+hr { border: none; border-top: 1px dashed #000; margin: 3px 0; }
+.row { display: flex; justify-content: space-between; align-items: flex-start; }
+.item-name { flex: 1; padding-right: 4px; word-break: break-word; overflow-wrap: break-word; }
+.item-qty { width: 20px; text-align: center; white-space: nowrap; }
+.item-amt { width: 46px; text-align: right; white-space: nowrap; }
+@media print { html, body { width: 58mm; max-width: 58mm; } }
 `;
 
 const MONTHS = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
@@ -55,10 +61,10 @@ const fmtTime = (s: string) => {
 };
 
 const openPrint = (title: string, html: string) => {
-  const win = window.open('', '_blank', 'width=380,height=650');
+  const win = window.open('', '_blank', 'width=230,height=700');
   if (!win) { alert('Allow pop-ups to print.'); return; }
   win.document.write(
-    `<!DOCTYPE html><html><head><meta charset="utf-8"><title>${title}</title><style>${THERMAL_CSS}</style></head><body>${html}</body></html>`
+    `<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=220,initial-scale=1"><title>${title}</title><style>${THERMAL_CSS}</style></head><body><div class="receipt">${html}</div></body></html>`
   );
   win.document.close();
   win.focus();
@@ -72,9 +78,9 @@ export const printBill = (order: PrintOrder) => {
     const hasSize = it.sizeLabel && it.sizeLabel !== 'Regular' && it.sizeLabel !== '';
     const label = hasSize ? `${it.name} (${it.sizeLabel})` : it.name;
     return `<div class="row" style="margin:1px 0">
-      <span style="flex:1;padding-right:4px">${label}</span>
-      <span style="width:18px;text-align:center">${it.quantity}</span>
-      <span style="width:44px;text-align:right">&#8377;${it.price * it.quantity}</span>
+      <span class="item-name">${label}</span>
+      <span class="item-qty">${it.quantity}</span>
+      <span class="item-amt">&#8377;${it.price * it.quantity}</span>
     </div>`;
   }).join('');
 
