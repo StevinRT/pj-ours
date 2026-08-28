@@ -164,6 +164,117 @@ export const printKot = (order: PrintOrder) => {
   openPrint(`KOT #${order.order_number}`, html);
 };
 
-// Direct ESC/POS from a browser is not possible without a native Android bridge app.
-// If a companion app with Bluetooth RFCOMM access is added in future, re-introduce
-// generateEscPosBill here and POST the bytes to its local bridge endpoint.
+// ── Android bridge path ──────────────────────────────────────────────────────
+// generateEscPosBill produces raw ESC/POS bytes (32-char/line, Font A, no cut).
+// printThermalBill POSTs them to the companion Android bridge app on localhost:9100.
+// If the bridge is not running it falls back to the existing browser print dialog.
+
+export const generateEscPosBill = (order: PrintOrder): Uint8Array => {
+  const COLS = 32;
+  const b: number[] = [];
+  const enc = new TextEncoder();
+  const push = (...n: number[]) => b.push(...n);
+  // TextEncoder produces UTF-8; for ASCII-only content that is identical to CP437/Latin-1
+  const str  = (s: string) => b.push(...enc.encode(s));
+  const lf   = () => push(0x0a);
+  const line = () => { str('-'.repeat(COLS)); lf(); };
+
+  const twoCol = (left: string, right: string) => {
+    const pad = Math.max(1, COLS - left.length - right.length);
+    str(left + ' '.repeat(pad) + right); lf();
+  };
+
+  // name(20) + qty(4) + amt(8) = 32; long names wrap to a continuation line
+  const itemRow = (name: string, qty: string, amt: string) => {
+    const first = name.substring(0, 20);
+    const rest  = name.length > 20 ? name.substring(20).trim() : '';
+    str(first.padEnd(20) + qty.padStart(4) + amt.padStart(8)); lf();
+    if (rest) { str('  ' + rest.substring(0, COLS - 2)); lf(); }
+  };
+
+  push(0x1b, 0x40);                       // ESC @ — init
+
+  push(0x1b, 0x61, 0x01);                 // center
+  push(0x1d, 0x21, 0x11);                 // double width + height
+  push(0x1b, 0x45, 0x01);                 // bold
+  str('PJ OURS'); lf();
+  push(0x1d, 0x21, 0x00);                 // normal size
+  str(branchName(order.branch)); lf();
+  push(0x1b, 0x45, 0x00);                 // bold off
+  push(0x1b, 0x61, 0x00);                 // left align
+
+  line();
+  str(`ORDER #${order.order_number}`); lf();
+  twoCol(fmtDate(order.created_at), fmtTime(order.created_at));
+
+  const isDineIn = order.order_type === 'dine-in';
+  if (isDineIn && order.table_number) {
+    push(0x1b, 0x61, 0x01);
+    push(0x1b, 0x45, 0x01);
+    str(`TABLE: ${order.table_number}`); lf();
+    push(0x1b, 0x45, 0x00);
+    push(0x1b, 0x61, 0x00);
+  }
+  push(0x1b, 0x61, 0x01);
+  str(isDineIn ? 'DINE IN' : 'PARCEL'); lf();
+  push(0x1b, 0x61, 0x00);
+
+  line();
+  push(0x1b, 0x45, 0x01);
+  itemRow('ITEM', 'QTY', 'AMT');
+  push(0x1b, 0x45, 0x00);
+  line();
+
+  for (const it of order.items) {
+    const hasSize = it.sizeLabel && it.sizeLabel !== 'Regular' && it.sizeLabel !== '';
+    const name = hasSize ? `${it.name} (${it.sizeLabel})` : it.name;
+    // Use "Rs" — the rupee symbol U+20B9 is not in standard thermal printer code pages
+    itemRow(name, String(it.quantity), `Rs${it.price * it.quantity}`);
+  }
+
+  line();
+  twoCol('ITEMS TOTAL', `Rs${order.subtotal}`);
+  if (order.packing_charge > 0) {
+    twoCol('PACKING CHARGE', `Rs${order.packing_charge}`);
+  }
+  line();
+
+  if (order.payment_method) {
+    str(`PAYMENT: ${order.payment_method.toUpperCase()}`); lf();
+  }
+
+  push(0x1b, 0x45, 0x01);
+  push(0x1d, 0x21, 0x01);                 // double height for total line
+  twoCol('TOTAL', `Rs${order.total}`);
+  push(0x1d, 0x21, 0x00);
+  push(0x1b, 0x45, 0x00);
+
+  line();
+  push(0x1b, 0x61, 0x01);
+  push(0x1b, 0x45, 0x01);
+  str('THANK YOU!'); lf();
+  push(0x1b, 0x45, 0x00);
+  str('Visit us again'); lf();
+  push(0x1b, 0x61, 0x00);
+
+  push(0x1b, 0x64, 0x04);                 // feed 4 lines for tear-off (no cut command)
+
+  return new Uint8Array(b);
+};
+
+export const printThermalBill = async (order: PrintOrder): Promise<void> => {
+  const bytes = generateEscPosBill(order);
+  try {
+    const res = await fetch('http://192.168.31.59:9100/print', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/octet-stream' },
+      body: new Blob([bytes.buffer as ArrayBuffer]),
+      signal: AbortSignal.timeout(5000),
+    });
+    if (!res.ok) throw new Error(`bridge ${res.status}`);
+    // Bridge succeeded — receipt is already printing; skip the browser print dialog
+  } catch {
+    // Bridge unavailable or failed — fall back to browser print
+    printBill(order);
+  }
+};
