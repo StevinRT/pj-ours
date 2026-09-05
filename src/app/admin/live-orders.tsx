@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import type { Json } from "@/lib/supabase/types";
 
-import { printThermalBill, printKot } from "./print-utils";
+import { printThermalBill, printThermalKot } from "./print-utils";
 
 type OrderItem = {
   name: string;
@@ -310,7 +310,7 @@ export default function LiveOrders({ onPunchOrder }: { onPunchOrder: () => void 
                     🧾 Print Bill
                   </button>
                   <button
-                    onClick={() => printKot({ ...order, items })}
+                    onClick={() => { void printThermalKot({ ...order, items }); }}
                     className="rounded-full bg-white/10 px-4 py-2 text-sm font-semibold text-white transition hover:bg-white/15"
                   >
                     🍳 Print KOT
