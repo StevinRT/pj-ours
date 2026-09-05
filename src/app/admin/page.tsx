@@ -22,9 +22,19 @@ export default async function AdminPage() {
 
   const products = await listProducts(supabase);
 
+  const nowInIst = new Date(
+    new Date().getTime() + (330 - new Date().getTimezoneOffset()) * 60_000,
+  );
+  const cutoffDate = new Date(nowInIst);
+  cutoffDate.setDate(nowInIst.getDate() - 2);
+  const cutoffDateString = cutoffDate.toISOString().slice(0, 10);
+
+  await supabase.from("daily_sales").delete().lt("sale_date", cutoffDateString);
+
   const { data: dailySales } = await supabase
     .from("daily_sales")
     .select("*")
+    .gte("sale_date", cutoffDateString)
     .order("sale_date", { ascending: false });
 
   return (

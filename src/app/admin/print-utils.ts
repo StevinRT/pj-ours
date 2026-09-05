@@ -49,6 +49,15 @@ html,body{width:58mm!important;margin:0!important;padding:0!important;background
 
 const MONTHS = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
 
+const getBridgeBaseUrl = () => {
+  if (typeof window !== 'undefined') {
+    const fromQuery = new URLSearchParams(window.location.search).get('thermalBridge');
+    if (fromQuery) return fromQuery.replace(/\/+$/, '');
+  }
+
+  return (process.env.NEXT_PUBLIC_THERMAL_BRIDGE_URL ?? 'http://localhost:9100').replace(/\/+$/, '');
+};
+
 const branchName = (id: string) =>
   id === 'east-fort' ? 'EAST FORT' : id === 'west-fort' ? 'WEST FORT' : id.toUpperCase().replace(/-/g, ' ');
 
@@ -264,17 +273,32 @@ export const generateEscPosBill = (order: PrintOrder): Uint8Array => {
 
 export const printThermalBill = async (order: PrintOrder): Promise<void> => {
   const bytes = generateEscPosBill(order);
+  const bridgeBaseUrl = getBridgeBaseUrl();
+  const fallbackToBrowserPrint = () => {
+    if (typeof window === 'undefined' || typeof window.print !== 'function') return;
+    // Trigger the browser print dialog immediately while the click is still active.
+    // If the Android bridge is unavailable or the page is on HTTPS with an HTTP bridge,
+    // this is the only reliable path that Chrome will allow.
+    printBill(order);
+  };
+
+  // Mixed-content browsers block http:// bridge calls when the app itself is served over https://.
+  if (typeof window !== 'undefined' && window.location.protocol === 'https:' && bridgeBaseUrl.startsWith('http://')) {
+    fallbackToBrowserPrint();
+    return;
+  }
+
   try {
-    const res = await fetch('http://192.168.31.59:9100/print', {
+    const res = await fetch(`${bridgeBaseUrl}/print`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/octet-stream' },
       body: new Blob([bytes.buffer as ArrayBuffer]),
       signal: AbortSignal.timeout(5000),
     });
     if (!res.ok) throw new Error(`bridge ${res.status}`);
-    // Bridge succeeded — receipt is already printing; skip the browser print dialog
+    // Bridge succeeded — receipt is already printing; skip the browser print dialog.
   } catch {
-    // Bridge unavailable or failed — fall back to browser print
-    printBill(order);
+    // Bridge unavailable or failed — fall back to browser print while the click gesture is still active.
+    fallbackToBrowserPrint();
   }
 };

@@ -31,7 +31,7 @@ export default function DailySales({ sales }: { sales: DailySale[] }) {
           </p>
           <h2 className="mt-1 text-2xl font-bold">Daily Sales</h2>
           <p className="mt-1 text-sm text-zinc-400">
-            Previous days' completed sales summaries.
+            Last 3 days of completed sales summaries.
           </p>
         </div>
       </div>
