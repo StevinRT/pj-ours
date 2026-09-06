@@ -1,6 +1,7 @@
 ﻿"use client";
 
 import { motion } from "framer-motion";
+import { ArrowRight, Leaf, ListChecks, MessageCircle, ShoppingBag, ShoppingCart, Zap } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { createClient } from "@/lib/supabase/client";
@@ -37,21 +38,16 @@ const branches: Branch[] = [
 
 const categories = menuCategories;
 
-// Decorative cup + fruit glow used in the hero, built from existing assets/emoji (no screenshot images).
+// Single polished PJ Ours artwork glow used in the hero (existing logo asset, no screenshot images).
 function DrinkVisual({ className = "" }: { className?: string }) {
   return (
     <div className={`relative flex items-center justify-center ${className}`}>
       <div className="absolute inset-0 rounded-full bg-amber-400/25 blur-2xl" aria-hidden="true" />
-      <div className="absolute inset-4 rounded-full bg-emerald-400/10 blur-xl" aria-hidden="true" />
       <img
         src="/logo.png"
-        alt=""
-        aria-hidden="true"
-        className="relative h-2/3 w-2/3 rounded-2xl object-cover shadow-[0_0_35px_rgba(251,191,36,0.55)]"
+        alt="PJ Ours drink"
+        className="relative h-full w-full object-contain drop-shadow-[0_0_25px_rgba(251,191,36,0.45)]"
       />
-      <span className="absolute -bottom-1 -left-2 text-xl sm:text-2xl md:text-3xl" aria-hidden="true">🍓</span>
-      <span className="absolute -bottom-2 right-1 text-xl sm:text-2xl md:text-3xl" aria-hidden="true">🍌</span>
-      <span className="absolute -top-1 right-3 text-lg sm:text-xl md:text-2xl" aria-hidden="true">🍏</span>
     </div>
   );
 }
@@ -444,32 +440,33 @@ export default function Home() {
       )}
       <div className="sticky top-0 z-30 bg-[#09090b]/80 px-4 py-3 backdrop-blur-md sm:px-6 lg:px-8">
         <div className="mx-auto max-w-7xl">
-          <header className="flex items-center justify-between rounded-full border border-white/10 bg-white/5 px-4 py-3 backdrop-blur md:px-6">
-            <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-full bg-white/10">
+          <header className="flex items-center justify-between gap-2 rounded-full border border-white/10 bg-white/5 px-2.5 py-1.5 backdrop-blur sm:px-4 sm:py-2 md:px-6">
+            <div className="flex min-w-0 items-center gap-2 sm:gap-3">
+              <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center overflow-hidden rounded-full bg-white/10 sm:h-9 sm:w-9">
                 <img
                   src="/logo.png"
                   alt="PJ Ours logo"
                   className="h-full w-full object-cover"
                 />
               </div>
-              <div>
-                <p className="text-sm font-semibold tracking-[0.3em] text-amber-300">PJ OURS</p>
-                <p className="text-xs text-zinc-400">Pickup Ordering</p>
+              <div className="min-w-0">
+                <p className="whitespace-nowrap text-xs font-semibold tracking-[0.2em] text-amber-300 sm:text-sm sm:tracking-[0.3em]">PJ OURS</p>
+                <p className="whitespace-nowrap text-[10px] text-zinc-400 sm:text-xs">Pickup Ordering</p>
               </div>
             </div>
-            <div className="relative flex items-center gap-2">
+            <div className="relative flex flex-shrink-0 items-center gap-1.5 sm:gap-2">
               <a
                 href="#menu"
-                className="flex items-center gap-2 rounded-full bg-amber-400 py-1.5 pl-4 pr-1.5 text-sm font-bold text-black shadow-[0_4px_14px_rgba(251,191,36,0.45)] transition-all duration-200 hover:-translate-y-0.5 hover:bg-amber-300 hover:shadow-[0_6px_20px_rgba(251,191,36,0.55)] active:translate-y-0 active:shadow-[0_2px_8px_rgba(251,191,36,0.35)]"
-              >
+                className="flex flex-shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full bg-amber-400 py-1 pl-3 pr-1 text-xs font-bold text-black shadow-[0_4px_14px_rgba(251,191,36,0.45)] transition-all duration-200 hover:-translate-y-0.5 hover:bg-amber-300 hover:shadow-[0_6px_20px_rgba(251,191,36,0.55)] active:translate-y-0 active:shadow-[0_2px_8px_rgba(251,191,36,0.35)] sm:gap-2 sm:py-1.5 sm:pl-4 sm:pr-1.5 sm:text-sm">
                 Order Now
-                <span className="flex h-7 w-7 items-center justify-center rounded-full bg-black text-amber-300" aria-hidden="true">→</span>
+                <span className="flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-black text-amber-300 sm:h-7 sm:w-7" aria-hidden="true">
+                  <ArrowRight className="h-3 w-3 sm:h-4 sm:w-4" aria-hidden="true" />
+                </span>
               </a>
               <button
                 onClick={() => setMenuOpen((o) => !o)}
                 aria-label="Open menu"
-                className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-full border border-zinc-600 bg-zinc-800 transition hover:bg-zinc-700"
+                className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full border border-zinc-600 bg-zinc-800 transition hover:bg-zinc-700 sm:h-11 sm:w-11"
               >
                 <svg width="20" height="15" viewBox="0 0 20 15" fill="none" aria-hidden="true">
                   <rect width="20" height="2.5" rx="1.25" fill="white" />
@@ -495,84 +492,77 @@ export default function Home() {
 
       <section className="relative overflow-hidden">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_90%_60%_at_-5%_-5%,_rgba(251,191,36,0.2),_transparent_55%),radial-gradient(ellipse_70%_70%_at_108%_108%,_rgba(16,185,129,0.26),_transparent_55%),radial-gradient(ellipse_50%_35%_at_50%_105%,_rgba(251,191,36,0.07),_transparent_100%)]" />
-        <div className="relative mx-auto flex max-w-7xl flex-col px-4 pb-16 pt-8 sm:px-6 sm:pt-12 lg:px-8">
-          <div className="grid items-center gap-12 md:grid-cols-[1.1fr_0.9fr]">
-            <motion.div
-              initial={{ opacity: 0, y: 28 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.55 }}
-              className="space-y-7"
-            >
-              <span className="inline-flex items-center gap-2 rounded-full border border-emerald-400/50 bg-emerald-400/10 px-4 py-1.5 text-sm font-semibold text-emerald-200 shadow-[0_0_18px_rgba(52,211,153,0.12)]">
-                <span aria-hidden="true">🌿</span>
-                Premium juice & shake pickup experience
-              </span>
-              <div className="relative space-y-5">
-                <DrinkVisual className="absolute -top-3 right-0 h-24 w-24 sm:h-28 sm:w-28 md:hidden" />
-                <h1 className="max-w-[68%] text-[2rem] font-black leading-[1.15] tracking-tight text-white sm:max-w-[70%] sm:text-5xl md:max-w-none lg:text-6xl">
-                  Fresh blends<br />
-                  made for the{" "}
-                  <span className="text-amber-400">fastest pickup</span>
-                  <br />
-                  orders.
-                </h1>
-                <p className="max-w-lg text-base leading-relaxed text-zinc-300 sm:text-lg">
-                  Browse the handcrafted menu, build your cart in seconds, and send a formatted{" "}
-                  <span className="font-semibold text-emerald-400">WhatsApp</span> order straight to your nearest PJ Ours branch.
-                </p>
-              </div>
-              <div className="grid grid-cols-2 gap-3">
-                <a
-                  href="#menu"
-                  className="flex flex-col items-start gap-1 rounded-2xl border border-amber-400/40 bg-black/40 px-4 py-3 transition-all duration-200 hover:-translate-y-0.5 hover:border-amber-300"
-                >
-                  <span className="flex items-center gap-2 text-sm font-bold text-white sm:text-base">
-                    <span aria-hidden="true">📋</span> View Menu
-                  </span>
-                  <span className="flex items-center gap-1 text-xs text-zinc-400">
-                    Explore our items <span aria-hidden="true">→</span>
-                  </span>
-                </a>
-                <a
-                  href="#menu"
-                  className="flex flex-col items-start gap-1 rounded-2xl bg-amber-400 px-4 py-3 shadow-[0_4px_18px_rgba(251,191,36,0.45)] transition-all duration-200 hover:-translate-y-0.5 hover:bg-amber-300"
-                >
-                  <span className="flex items-center gap-2 text-sm font-bold text-black sm:text-base">
-                    <span aria-hidden="true">🛍️</span> Order Now
-                  </span>
-                  <span className="flex items-center gap-1 text-xs text-black/70">
-                    Start your order <span aria-hidden="true">→</span>
-                  </span>
-                </a>
-              </div>
-              <div className="grid grid-cols-3 gap-2.5 sm:gap-3">
-                <div className="rounded-2xl border border-white/10 bg-white/5 p-3 sm:p-4">
-                  <span className="text-lg text-emerald-400" aria-hidden="true">⚡</span>
-                  <p className="mt-2 text-xs font-semibold text-white sm:text-sm">Fast Pickup</p>
-                  <p className="text-[11px] text-zinc-400 sm:text-xs">Ready in minutes</p>
-                </div>
-                <div className="rounded-2xl border border-white/10 bg-white/5 p-3 sm:p-4">
-                  <span className="text-lg text-emerald-400" aria-hidden="true">🌿</span>
-                  <p className="mt-2 text-xs font-semibold text-white sm:text-sm">Fresh & Quality</p>
-                  <p className="text-[11px] text-zinc-400 sm:text-xs">Premium ingredients</p>
-                </div>
-                <div className="rounded-2xl border border-white/10 bg-white/5 p-3 sm:p-4">
-                  <span className="text-lg text-emerald-400" aria-hidden="true">💬</span>
-                  <p className="mt-2 text-xs font-semibold text-white sm:text-sm">Order via WhatsApp</p>
-                  <p className="text-[11px] text-zinc-400 sm:text-xs">Direct to branch</p>
-                </div>
-              </div>
-            </motion.div>
+        <div className="relative mx-auto max-w-7xl px-4 pb-8 pt-5 sm:px-6 sm:pb-10 sm:pt-8 lg:px-8">
+          <motion.div
+            initial={{ opacity: 0, y: 28 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.55 }}
+            className="space-y-4 sm:space-y-5"
+          >
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-400/50 bg-emerald-400/10 px-3 py-1 text-xs font-semibold text-emerald-200 shadow-[0_0_18px_rgba(52,211,153,0.12)] sm:px-4 sm:py-1.5 sm:text-sm">
+              <Leaf className="h-3.5 w-3.5 flex-shrink-0" aria-hidden="true" />
+              Premium juice & shake pickup experience
+            </span>
 
-            <motion.div
-              initial={{ opacity: 0, scale: 0.96 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.5, delay: 0.1 }}
-              className="hidden md:flex md:items-center md:justify-center"
-            >
-              <DrinkVisual className="h-64 w-64 lg:h-80 lg:w-80" />
-            </motion.div>
-          </div>
+            <div className="flex items-start justify-between gap-3 sm:gap-6">
+              <h1 className="min-w-0 flex-1 text-[1.65rem] font-black leading-[1.15] tracking-tight text-white sm:text-5xl lg:text-6xl">
+                Fresh blends<br />
+                made for the{" "}
+                <span className="text-amber-400">fastest pickup</span>
+                <br />
+                orders.
+              </h1>
+              <DrinkVisual className="h-20 w-20 flex-shrink-0 sm:h-36 sm:w-36 md:h-44 md:w-44 lg:h-56 lg:w-56" />
+            </div>
+
+            <p className="max-w-lg text-sm leading-relaxed text-zinc-300 sm:text-lg">
+              Browse the handcrafted menu, build your cart in seconds, and send a formatted{" "}
+              <span className="font-semibold text-emerald-400">WhatsApp</span> order straight to your nearest PJ Ours branch.
+            </p>
+
+            <div className="grid grid-cols-2 gap-2.5 sm:gap-3">
+              <a
+                href="#menu"
+                className="flex flex-col items-start gap-1 rounded-2xl border border-amber-400/40 bg-black/40 px-3 py-2.5 transition-all duration-200 hover:-translate-y-0.5 hover:border-amber-300 sm:px-4 sm:py-3"
+              >
+                <span className="flex items-center gap-1.5 text-xs font-bold text-white sm:gap-2 sm:text-base">
+                  <ListChecks className="h-4 w-4 text-amber-300" aria-hidden="true" /> View Menu
+                </span>
+                <span className="flex items-center gap-1 text-[11px] text-zinc-400 sm:text-xs">
+                  Explore our items <ArrowRight className="h-3 w-3" aria-hidden="true" />
+                </span>
+              </a>
+              <a
+                href="#menu"
+                className="flex flex-col items-start gap-1 rounded-2xl bg-amber-400 px-3 py-2.5 shadow-[0_4px_18px_rgba(251,191,36,0.45)] transition-all duration-200 hover:-translate-y-0.5 hover:bg-amber-300 sm:px-4 sm:py-3"
+              >
+                <span className="flex items-center gap-1.5 text-xs font-bold text-black sm:gap-2 sm:text-base">
+                  <ShoppingBag className="h-4 w-4" aria-hidden="true" /> Order Now
+                </span>
+                <span className="flex items-center gap-1 text-[11px] text-black/70 sm:text-xs">
+                  Start your order <ArrowRight className="h-3 w-3" aria-hidden="true" />
+                </span>
+              </a>
+            </div>
+
+            <div className="grid grid-cols-3 gap-2 sm:gap-3">
+              <div className="rounded-2xl border border-white/10 bg-white/5 p-2.5 sm:p-4">
+                <Zap className="h-4 w-4 text-emerald-400 sm:h-5 sm:w-5" aria-hidden="true" />
+                <p className="mt-1.5 text-[11px] font-semibold text-white sm:mt-2 sm:text-sm">Fast Pickup</p>
+                <p className="text-[10px] text-zinc-400 sm:text-xs">Ready in minutes</p>
+              </div>
+              <div className="rounded-2xl border border-white/10 bg-white/5 p-2.5 sm:p-4">
+                <Leaf className="h-4 w-4 text-emerald-400 sm:h-5 sm:w-5" aria-hidden="true" />
+                <p className="mt-1.5 text-[11px] font-semibold text-white sm:mt-2 sm:text-sm">Fresh & Quality</p>
+                <p className="text-[10px] text-zinc-400 sm:text-xs">Premium ingredients</p>
+              </div>
+              <div className="rounded-2xl border border-white/10 bg-white/5 p-2.5 sm:p-4">
+                <MessageCircle className="h-4 w-4 text-emerald-400 sm:h-5 sm:w-5" aria-hidden="true" />
+                <p className="mt-1.5 text-[11px] font-semibold text-white sm:mt-2 sm:text-sm">Order via WhatsApp</p>
+                <p className="text-[10px] text-zinc-400 sm:text-xs">Direct to branch</p>
+              </div>
+            </div>
+          </motion.div>
         </div>
       </section>
 
@@ -815,11 +805,11 @@ export default function Home() {
           className={`flex items-center justify-between rounded-full bg-amber-400 px-4 py-3 font-semibold text-black shadow-[0_4px_18px_rgba(251,191,36,0.45)] ${cartBounce ? "cart-bounce" : ""}`}
         >
           <span className="flex items-center gap-2">
-            <span aria-hidden="true">🛒</span>
+            <ShoppingCart className="h-4 w-4" aria-hidden="true" />
             {totalItems} items • ₹{finalTotal}
           </span>
           <span className="flex items-center gap-1">
-            View Cart <span aria-hidden="true">→</span>
+            View Cart <ArrowRight className="h-4 w-4" aria-hidden="true" />
           </span>
         </a>
       </div>
