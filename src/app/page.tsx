@@ -566,27 +566,27 @@ export default function Home() {
         </div>
       </section>
 
-      <section id="menu" className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
+      <section id="menu" className="mx-auto max-w-7xl px-4 py-10 sm:px-6 sm:py-14 lg:px-8">
         <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_360px]">
           <div>
-            <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+            <div className="mb-4 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
               <div>
                 <p className="text-sm font-semibold uppercase tracking-[0.4em] text-amber-300">Interactive Menu</p>
                 <h2 className="mt-2 text-3xl font-bold">Build your pickup order</h2>
               </div>
-              <div className="flex w-full max-w-xl flex-col gap-3 md:flex-row">
+              <div className="flex w-full max-w-xl flex-col gap-2.5 md:flex-row">
                 <input
                   value={searchTerm}
                   onChange={(event) => setSearchTerm(event.target.value)}
                   placeholder="Search drinks or shakes"
                   className="w-full rounded-full border border-white/10 bg-white/5 px-4 py-3 text-white outline-none placeholder:text-zinc-400"
                 />
-                <div className="flex flex-wrap gap-2">
+                <div className="flex flex-wrap gap-1.5">
                   {categories.map((category) => (
                     <button
                       key={category}
                       onClick={() => setSelectedCategory(category)}
-                      className={`rounded-full px-4 py-2 text-sm font-medium transition ${
+                      className={`whitespace-nowrap rounded-full px-2.5 py-1 text-xs font-medium transition sm:px-3 sm:py-1.5 sm:text-sm ${
                         selectedCategory === category
                           ? "bg-amber-400 text-black"
                           : "border border-white/10 bg-white/5 text-zinc-200 hover:bg-white/10"
