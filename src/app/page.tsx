@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { createClient } from "@/lib/supabase/client";
-import { bestSellerIds, menuCategories, menuItems } from "@/lib/menu";
+import { menuCategories, menuItems } from "@/lib/menu";
 import type { MenuItem, MenuSize } from "@/lib/menu";
 
 type Branch = {
@@ -36,6 +36,25 @@ const branches: Branch[] = [
 ];
 
 const categories = menuCategories;
+
+// Decorative cup + fruit glow used in the hero, built from existing assets/emoji (no screenshot images).
+function DrinkVisual({ className = "" }: { className?: string }) {
+  return (
+    <div className={`relative flex items-center justify-center ${className}`}>
+      <div className="absolute inset-0 rounded-full bg-amber-400/25 blur-2xl" aria-hidden="true" />
+      <div className="absolute inset-4 rounded-full bg-emerald-400/10 blur-xl" aria-hidden="true" />
+      <img
+        src="/logo.png"
+        alt=""
+        aria-hidden="true"
+        className="relative h-2/3 w-2/3 rounded-2xl object-cover shadow-[0_0_35px_rgba(251,191,36,0.55)]"
+      />
+      <span className="absolute -bottom-1 -left-2 text-xl sm:text-2xl md:text-3xl" aria-hidden="true">🍓</span>
+      <span className="absolute -bottom-2 right-1 text-xl sm:text-2xl md:text-3xl" aria-hidden="true">🍌</span>
+      <span className="absolute -top-1 right-3 text-lg sm:text-xl md:text-2xl" aria-hidden="true">🍏</span>
+    </div>
+  );
+}
 
 const getDistanceKm = (lat1: number, lng1: number, lat2: number, lng2: number) => {
   const toRad = (value: number) => (value * Math.PI) / 180;
@@ -436,15 +455,16 @@ export default function Home() {
               </div>
               <div>
                 <p className="text-sm font-semibold tracking-[0.3em] text-amber-300">PJ OURS</p>
-                <p className="text-xs text-zinc-300">Made Fresh🌟</p>
+                <p className="text-xs text-zinc-400">Pickup Ordering</p>
               </div>
             </div>
             <div className="relative flex items-center gap-2">
               <a
                 href="#menu"
-                className="rounded-full bg-amber-400 px-5 py-2.5 text-sm font-bold text-black shadow-[0_4px_14px_rgba(251,191,36,0.45)] transition-all duration-200 hover:-translate-y-0.5 hover:bg-amber-300 hover:shadow-[0_6px_20px_rgba(251,191,36,0.55)] active:translate-y-0 active:shadow-[0_2px_8px_rgba(251,191,36,0.35)]"
+                className="flex items-center gap-2 rounded-full bg-amber-400 py-1.5 pl-4 pr-1.5 text-sm font-bold text-black shadow-[0_4px_14px_rgba(251,191,36,0.45)] transition-all duration-200 hover:-translate-y-0.5 hover:bg-amber-300 hover:shadow-[0_6px_20px_rgba(251,191,36,0.55)] active:translate-y-0 active:shadow-[0_2px_8px_rgba(251,191,36,0.35)]"
               >
                 Order Now
+                <span className="flex h-7 w-7 items-center justify-center rounded-full bg-black text-amber-300" aria-hidden="true">→</span>
               </a>
               <button
                 onClick={() => setMenuOpen((o) => !o)}
@@ -484,29 +504,62 @@ export default function Home() {
               className="space-y-7"
             >
               <span className="inline-flex items-center gap-2 rounded-full border border-emerald-400/50 bg-emerald-400/10 px-4 py-1.5 text-sm font-semibold text-emerald-200 shadow-[0_0_18px_rgba(52,211,153,0.12)]">
-                <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-400" aria-hidden="true" />
+                <span aria-hidden="true">🌿</span>
                 Premium juice & shake pickup experience
               </span>
-              <div className="space-y-5">
-                <h1 className="bg-gradient-to-b from-white to-zinc-300 bg-clip-text text-[2.1rem] font-black leading-[1.15] tracking-tight text-transparent sm:text-5xl lg:text-6xl">
-                  Fresh blends made for the fastest pickup orders.
+              <div className="relative space-y-5">
+                <DrinkVisual className="absolute -top-3 right-0 h-24 w-24 sm:h-28 sm:w-28 md:hidden" />
+                <h1 className="max-w-[68%] text-[2rem] font-black leading-[1.15] tracking-tight text-white sm:max-w-[70%] sm:text-5xl md:max-w-none lg:text-6xl">
+                  Fresh blends<br />
+                  made for the{" "}
+                  <span className="text-amber-400">fastest pickup</span>
+                  <br />
+                  orders.
                 </h1>
                 <p className="max-w-lg text-base leading-relaxed text-zinc-300 sm:text-lg">
-                  Browse the handcrafted menu, build your cart in seconds, and send a formatted WhatsApp order straight to your nearest PJ Ours branch.
+                  Browse the handcrafted menu, build your cart in seconds, and send a formatted{" "}
+                  <span className="font-semibold text-emerald-400">WhatsApp</span> order straight to your nearest PJ Ours branch.
                 </p>
               </div>
-              <div className="flex flex-col gap-3 sm:flex-row">
+              <div className="grid grid-cols-2 gap-3">
                 <a
                   href="#menu"
-                  className="rounded-full bg-amber-400 px-7 py-3.5 text-center font-bold text-black shadow-[0_4px_18px_rgba(251,191,36,0.45)] transition-all duration-200 hover:-translate-y-0.5 hover:bg-amber-300 hover:shadow-[0_6px_26px_rgba(251,191,36,0.58)] active:translate-y-0 active:shadow-[0_2px_10px_rgba(251,191,36,0.35)]"
+                  className="flex flex-col items-start gap-1 rounded-2xl border border-amber-400/40 bg-black/40 px-4 py-3 transition-all duration-200 hover:-translate-y-0.5 hover:border-amber-300"
                 >
-                  View Menu
+                  <span className="flex items-center gap-2 text-sm font-bold text-white sm:text-base">
+                    <span aria-hidden="true">📋</span> View Menu
+                  </span>
+                  <span className="flex items-center gap-1 text-xs text-zinc-400">
+                    Explore our items <span aria-hidden="true">→</span>
+                  </span>
+                </a>
+                <a
+                  href="#menu"
+                  className="flex flex-col items-start gap-1 rounded-2xl bg-amber-400 px-4 py-3 shadow-[0_4px_18px_rgba(251,191,36,0.45)] transition-all duration-200 hover:-translate-y-0.5 hover:bg-amber-300"
+                >
+                  <span className="flex items-center gap-2 text-sm font-bold text-black sm:text-base">
+                    <span aria-hidden="true">🛍️</span> Order Now
+                  </span>
+                  <span className="flex items-center gap-1 text-xs text-black/70">
+                    Start your order <span aria-hidden="true">→</span>
+                  </span>
                 </a>
               </div>
-              <div className="grid gap-3">
-                <div className="inline-flex w-fit items-center gap-3 rounded-2xl border border-amber-400/35 bg-amber-950/40 px-5 py-3.5 shadow-[inset_0_1px_0_rgba(251,191,36,0.15)]">
-                  <p className="text-2xl font-black text-amber-300">5 min</p>
-                  <p className="text-sm text-zinc-300">Quick checkout flow</p>
+              <div className="grid grid-cols-3 gap-2.5 sm:gap-3">
+                <div className="rounded-2xl border border-white/10 bg-white/5 p-3 sm:p-4">
+                  <span className="text-lg text-emerald-400" aria-hidden="true">⚡</span>
+                  <p className="mt-2 text-xs font-semibold text-white sm:text-sm">Fast Pickup</p>
+                  <p className="text-[11px] text-zinc-400 sm:text-xs">Ready in minutes</p>
+                </div>
+                <div className="rounded-2xl border border-white/10 bg-white/5 p-3 sm:p-4">
+                  <span className="text-lg text-emerald-400" aria-hidden="true">🌿</span>
+                  <p className="mt-2 text-xs font-semibold text-white sm:text-sm">Fresh & Quality</p>
+                  <p className="text-[11px] text-zinc-400 sm:text-xs">Premium ingredients</p>
+                </div>
+                <div className="rounded-2xl border border-white/10 bg-white/5 p-3 sm:p-4">
+                  <span className="text-lg text-emerald-400" aria-hidden="true">💬</span>
+                  <p className="mt-2 text-xs font-semibold text-white sm:text-sm">Order via WhatsApp</p>
+                  <p className="text-[11px] text-zinc-400 sm:text-xs">Direct to branch</p>
                 </div>
               </div>
             </motion.div>
@@ -515,30 +568,9 @@ export default function Home() {
               initial={{ opacity: 0, scale: 0.96 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.5, delay: 0.1 }}
-              className="overflow-hidden rounded-[2rem] border border-white/10 bg-black/20 p-5 shadow-2xl backdrop-blur-sm"
+              className="hidden md:flex md:items-center md:justify-center"
             >
-              <div className="mb-4 flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <span className="text-sm text-amber-300" aria-hidden="true">★</span>
-                  <span className="text-sm font-bold text-white">Best Sellers</span>
-                </div>
-                <span className="rounded-full bg-white/10 px-2.5 py-1 text-xs text-zinc-400">Updated daily</span>
-              </div>
-              <div className="grid grid-cols-3 gap-2.5">
-                {menuItems
-                  .filter((item) => bestSellerIds.includes(item.id))
-                  .map((item) => (
-                    <a
-                      key={item.id}
-                      href="#menu"
-                      className="group flex flex-col items-center gap-2 rounded-2xl border border-white/10 bg-white/5 p-3 text-center no-underline transition-all duration-200 hover:-translate-y-0.5 hover:border-amber-300/30 hover:bg-amber-400/10 hover:shadow-[0_4px_16px_rgba(251,191,36,0.14)]"
-                    >
-                      <span className="text-3xl transition-transform duration-200 group-hover:scale-110">{item.emoji}</span>
-                      <p className="text-xs font-semibold leading-tight text-white">{item.name}</p>
-                      <p className="text-xs font-bold text-amber-300">₹{item.sizes[0]?.price ?? 0}</p>
-                    </a>
-                  ))}
-              </div>
+              <DrinkVisual className="h-64 w-64 lg:h-80 lg:w-80" />
             </motion.div>
           </div>
         </div>
@@ -780,10 +812,15 @@ export default function Home() {
       <div ref={mobileCartRef} className={`fixed inset-x-0 bottom-0 z-40 border-t border-white/10 bg-zinc-950/95 p-3 backdrop-blur transition-transform duration-200 lg:hidden ${isScrolling ? "translate-y-full" : "translate-y-0"}`}>
         <a
           href="#order-summary"
-          className={`flex items-center justify-between rounded-2xl bg-amber-400 px-4 py-3 font-semibold text-black ${cartBounce ? "cart-bounce" : ""}`}
+          className={`flex items-center justify-between rounded-full bg-amber-400 px-4 py-3 font-semibold text-black shadow-[0_4px_18px_rgba(251,191,36,0.45)] ${cartBounce ? "cart-bounce" : ""}`}
         >
-          <span>{totalItems} items • ₹{finalTotal}</span>
-          <span>View Cart</span>
+          <span className="flex items-center gap-2">
+            <span aria-hidden="true">🛒</span>
+            {totalItems} items • ₹{finalTotal}
+          </span>
+          <span className="flex items-center gap-1">
+            View Cart <span aria-hidden="true">→</span>
+          </span>
         </a>
       </div>
 
