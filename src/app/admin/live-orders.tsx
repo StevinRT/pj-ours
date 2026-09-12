@@ -97,7 +97,10 @@ export default function LiveOrders({ onPunchOrder }: { onPunchOrder: () => void 
   const initialIdsRef = useRef<Set<string>>(new Set());
 
   useEffect(() => {
-    const channelName = `orders-live-${crypto.randomUUID()}`;
+    const channelId = typeof crypto !== "undefined" && typeof crypto.randomUUID === "function"
+      ? crypto.randomUUID()
+      : Math.random().toString(36).slice(2, 11);
+    const channelName = `orders-live-${channelId}`;
     const supabase = createClient();
 
     console.log("[LiveOrders] mounting — project URL:", process.env.NEXT_PUBLIC_SUPABASE_URL);
@@ -304,20 +307,23 @@ export default function LiveOrders({ onPunchOrder }: { onPunchOrder: () => void 
                 {/* Action buttons */}
                 <div className="mt-3 flex flex-wrap gap-2">
                   <button
+                    type="button"
                     onClick={() => { void printThermalBill({ ...order, items }); }}
-                    className="rounded-full bg-white/10 px-4 py-2 text-sm font-semibold text-white transition hover:bg-white/15"
+                    className="rounded-full bg-white/10 px-4 py-2 text-sm font-semibold text-white transition hover:bg-white/15 cursor-pointer"
                   >
                     🧾 Print Bill
                   </button>
                   <button
+                    type="button"
                     onClick={() => { void printThermalKot({ ...order, items }); }}
-                    className="rounded-full bg-white/10 px-4 py-2 text-sm font-semibold text-white transition hover:bg-white/15"
+                    className="rounded-full bg-white/10 px-4 py-2 text-sm font-semibold text-white transition hover:bg-white/15 cursor-pointer"
                   >
                     🍳 Print KOT
                   </button>
                   <button
+                    type="button"
                     onClick={() => markDone(order.id)}
-                    className="rounded-full bg-emerald-400/20 px-4 py-2 text-sm font-semibold text-emerald-200 transition hover:bg-emerald-400/30"
+                    className="rounded-full bg-emerald-400/20 px-4 py-2 text-sm font-semibold text-emerald-200 transition hover:bg-emerald-400/30 cursor-pointer"
                   >
                     ✓ Done
                   </button>
