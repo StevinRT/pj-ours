@@ -854,7 +854,7 @@ export default function Home() {
               </div>
             </div>
 
-            <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+            <div className="grid gap-3 sm:gap-4 md:grid-cols-2 xl:grid-cols-3">
               {filteredItems.map((item) => {
                 const selectedSizeLabel = selectedSizeByItem[item.id] ?? item.sizes[0]?.label ?? "";
                 const selectedSize = item.sizes.find((size) => size.label === selectedSizeLabel) ?? item.sizes[0];
@@ -863,57 +863,57 @@ export default function Home() {
                   <motion.article
                     key={item.id}
                     layout
-                    className="overflow-hidden rounded-[1.6rem] border border-white/10 bg-white/5"
+                    className="flex flex-col justify-between overflow-hidden rounded-2xl border border-white/10 bg-white/5 sm:rounded-[1.6rem]"
                   >
-                    <div className="p-4">
+                    <div className="p-3.5 sm:p-4">
                       <div className="flex items-center justify-between">
-                        <span className="rounded-full bg-amber-400/20 px-3 py-1 text-xs font-semibold text-amber-200">
+                        <span className="rounded-full bg-amber-400/20 px-2.5 py-0.5 text-[11px] font-semibold text-amber-200 sm:px-3 sm:py-1 sm:text-xs">
                           {item.badge}
                         </span>
-                        <span className={`text-4xl inline-block ${poppingItemId === item.id ? "emoji-pop" : ""}`}>{item.emoji}</span>
+                        <span className={`inline-block text-2xl sm:text-3xl lg:text-4xl ${poppingItemId === item.id ? "emoji-pop" : ""}`}>{item.emoji}</span>
                       </div>
-                      <div className="mt-4 space-y-2">
-                        <h3 className="text-xl font-semibold">{item.name}</h3>
-                        <p className="text-sm text-zinc-300">{item.description}</p>
+                      <div className="mt-2.5 space-y-1 sm:mt-4 sm:space-y-2">
+                        <h3 className="text-base font-semibold leading-snug sm:text-xl">{item.name}</h3>
+                        <p className="line-clamp-2 text-xs text-zinc-300 leading-relaxed sm:text-sm">{item.description}</p>
                         {"available" in item && item.available === false ? (
-                          <p className="text-sm font-semibold text-rose-300">Out of Stock</p>
+                          <p className="text-xs font-semibold text-rose-300 sm:text-sm">Out of Stock</p>
                         ) : null}
-                        <p className="text-lg font-bold text-amber-300">₹{selectedSize?.price ?? 0}</p>
+                        <p className="text-base font-bold text-amber-300 sm:text-lg">₹{selectedSize?.price ?? 0}</p>
                       </div>
 
-                      <div className="mt-4 grid grid-cols-2 gap-2">
+                      <div className={`mt-2.5 grid gap-1.5 sm:mt-4 sm:gap-2 ${item.sizes.length === 3 ? "grid-cols-3" : item.sizes.length === 2 ? "grid-cols-2" : "grid-cols-1"}`}>
                         {item.sizes.map((size) => (
                           <button
                             key={`${item.id}-${size.label}`}
                             onClick={() =>
                               setSelectedSizeByItem((current) => ({ ...current, [item.id]: size.label }))
                             }
-                            className={`rounded-xl border px-2 py-2 text-left text-xs transition ${
+                            className={`rounded-xl border px-2 py-1.5 text-left transition sm:py-2 ${
                               selectedSizeLabel === size.label
                                 ? "border-amber-300 bg-amber-400/15 text-amber-100"
                                 : "border-white/10 bg-black/20 text-zinc-200"
                             }`}
                           >
-                            <div className="font-semibold">{size.label}</div>
-                            <div className="text-[11px] text-zinc-300">₹{size.price}</div>
+                            <div className="truncate text-[11px] font-semibold leading-tight sm:text-xs">{size.label}</div>
+                            <div className="text-[10px] text-zinc-300 sm:text-[11px]">₹{size.price}</div>
                           </button>
                         ))}
                       </div>
                     </div>
-                    <div className="mt-4 flex items-center justify-between gap-2 border-t border-white/10 p-4">
-                      <div className="flex items-center gap-2 rounded-full bg-black/20 px-2 py-1">
+                    <div className="mt-2.5 flex items-center justify-between gap-2 border-t border-white/10 px-3.5 py-2.5 sm:mt-4 sm:p-4">
+                      <div className="flex items-center gap-1.5 rounded-full bg-black/25 px-1.5 py-1 sm:gap-2 sm:bg-black/20 sm:px-2">
                         <button
                           onClick={() => updateQuantity(item.id, selectedSizeLabel, -1)}
-                          className="h-8 w-8 rounded-full bg-white/10 text-lg text-white"
+                          className="flex h-7 w-7 items-center justify-center rounded-full bg-white/10 text-base text-white transition hover:bg-white/20 active:scale-95 sm:h-8 sm:w-8 sm:text-lg"
                         >
                           −
                         </button>
-                        <span className="min-w-6 text-center text-sm font-semibold">
+                        <span className="min-w-5 text-center text-xs font-semibold sm:min-w-6 sm:text-sm">
                           {getItemQuantity(item.id)}
                         </span>
                         <button
                           onClick={() => updateQuantity(item.id, selectedSizeLabel, 1)}
-                          className="h-8 w-8 rounded-full bg-white/10 text-lg text-white"
+                          className="flex h-7 w-7 items-center justify-center rounded-full bg-white/10 text-base text-white transition hover:bg-white/20 active:scale-95 sm:h-8 sm:w-8 sm:text-lg"
                         >
                           +
                         </button>
@@ -921,7 +921,7 @@ export default function Home() {
                       <button
                         onClick={(e) => addToCart(item.id, selectedSizeLabel, e.currentTarget, item.emoji)}
                         disabled={"available" in item && item.available === false}
-                        className="rounded-full bg-emerald-400 px-4 py-2 text-sm font-semibold text-black transition hover:bg-emerald-300 disabled:cursor-not-allowed disabled:bg-zinc-700 disabled:text-zinc-300"
+                        className="rounded-full bg-emerald-400 px-3.5 py-1.5 text-xs font-semibold text-black transition hover:bg-emerald-300 active:scale-[0.98] disabled:cursor-not-allowed disabled:bg-zinc-700 disabled:text-zinc-300 sm:px-4 sm:py-2 sm:text-sm"
                       >
                         {"available" in item && item.available === false ? "Out of Stock" : "Add to Cart"}
                       </button>
