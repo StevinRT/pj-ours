@@ -216,14 +216,14 @@ export default function Home() {
     });
 
     return enrichedItems.filter((item) => {
-      const matchesCategory =
-        selectedCategory === "All" || item.category === selectedCategory;
-      const matchesSearch =
-        normalizedTerm.length === 0 ||
-        item.name.toLowerCase().includes(normalizedTerm) ||
-        item.description.toLowerCase().includes(normalizedTerm);
+      if (normalizedTerm.length > 0) {
+        return (
+          item.name.toLowerCase().includes(normalizedTerm) ||
+          item.description.toLowerCase().includes(normalizedTerm)
+        );
+      }
 
-      return matchesCategory && matchesSearch;
+      return selectedCategory === "All" || item.category === selectedCategory;
     });
   }, [productAvailability, searchTerm, selectedCategory]);
 
