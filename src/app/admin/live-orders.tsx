@@ -90,11 +90,42 @@ const fmtDateTime = (s: string) => {
 const branchLabel = (id: string) =>
   id === 'east-fort' ? 'East Fort' : id === 'west-fort' ? 'West Fort' : id;
 
+type PrintStatus = { type: "success" | "error"; message: string };
+
 export default function LiveOrders({ onPunchOrder }: { onPunchOrder: () => void }) {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [newOrderIds, setNewOrderIds] = useState<Set<string>>(new Set());
   const initialIdsRef = useRef<Set<string>>(new Set());
+  const [printStatus, setPrintStatus] = useState<Record<string, PrintStatus>>({});
+
+  const showPrintStatus = (orderId: string, status: PrintStatus) => {
+    setPrintStatus((prev) => ({ ...prev, [orderId]: status }));
+    setTimeout(() => {
+      setPrintStatus((prev) => {
+        if (prev[orderId] !== status) return prev;
+        const next = { ...prev };
+        delete next[orderId];
+        return next;
+      });
+    }, 4000);
+  };
+
+  const handlePrintBill = async (order: Order) => {
+    const result = await printThermalBill({ ...order, items: order.items });
+    showPrintStatus(
+      order.id,
+      result.ok ? { type: "success", message: "Printed successfully" } : { type: "error", message: result.message },
+    );
+  };
+
+  const handlePrintKot = async (order: Order) => {
+    const result = await printThermalKot({ ...order, items: order.items });
+    showPrintStatus(
+      order.id,
+      result.ok ? { type: "success", message: "Printed successfully" } : { type: "error", message: result.message },
+    );
+  };
 
   useEffect(() => {
     const channelId = typeof crypto !== "undefined" && typeof crypto.randomUUID === "function"
@@ -308,14 +339,14 @@ export default function LiveOrders({ onPunchOrder }: { onPunchOrder: () => void 
                 <div className="mt-3 flex flex-wrap gap-2">
                   <button
                     type="button"
-                    onClick={() => { void printThermalBill({ ...order, items }); }}
+                    onClick={() => { void handlePrintBill(order); }}
                     className="rounded-full bg-white/10 px-4 py-2 text-sm font-semibold text-white transition hover:bg-white/15 cursor-pointer"
                   >
                     🧾 Print Bill
                   </button>
                   <button
                     type="button"
-                    onClick={() => { void printThermalKot({ ...order, items }); }}
+                    onClick={() => { void handlePrintKot(order); }}
                     className="rounded-full bg-white/10 px-4 py-2 text-sm font-semibold text-white transition hover:bg-white/15 cursor-pointer"
                   >
                     🍳 Print KOT
@@ -328,6 +359,16 @@ export default function LiveOrders({ onPunchOrder }: { onPunchOrder: () => void 
                     ✓ Done
                   </button>
                 </div>
+
+                {printStatus[order.id] && (
+                  <p
+                    className={`mt-2 text-xs font-semibold ${
+                      printStatus[order.id].type === "success" ? "text-emerald-300" : "text-red-300"
+                    }`}
+                  >
+                    {printStatus[order.id].message}
+                  </p>
+                )}
               </div>
             );
           })}
