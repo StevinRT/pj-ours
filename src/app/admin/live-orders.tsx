@@ -332,11 +332,11 @@ export default function LiveOrders({ onPunchOrder }: { onPunchOrder: () => void 
   }, []);
 
   useEffect(() => {
-    const channelId = typeof crypto !== "undefined" && typeof crypto.randomUUID === "function"
-      ? crypto.randomUUID()
-      : Math.random().toString(36).slice(2, 11);
-    const channelName = `orders-live-${channelId}`;
     const supabase = createClient();
+    let isUnmounted = false;
+    let isReconnecting = false;
+    let reconnectTimer: number | null = null;
+    let activeChannel: ReturnType<typeof supabase.channel> | null = null;
 
     const loadOrders = async () => {
       const { data, error } = await supabase
@@ -362,66 +362,109 @@ export default function LiveOrders({ onPunchOrder }: { onPunchOrder: () => void 
       loaded.forEach((o) => initialIdsRef.current.add(o.id));
     };
 
-    const channel = supabase
-      .channel(channelName)
-      .on(
-        "postgres_changes",
-        { event: "INSERT", schema: "public", table: "orders" },
-        (payload) => {
-          const incoming = mapOrder(payload.new as RawOrder);
+    // (Re)creates the channel/subscription; used both for the initial mount and for recovery
+    // after the socket reports CLOSED/CHANNEL_ERROR/TIMED_OUT so a dead channel is never left in place.
+    const subscribeChannel = (isReconnect: boolean) => {
+      const channelId = typeof crypto !== "undefined" && typeof crypto.randomUUID === "function"
+        ? crypto.randomUUID()
+        : Math.random().toString(36).slice(2, 11);
+      const channelName = `orders-live-${channelId}`;
 
-          if (["new", "preparing", "ready"].includes(incoming.status)) {
-            setOrders((prev) => {
-              const next = prev.filter((order) => order.id !== incoming.id);
-              next.unshift(incoming);
-              return next;
-            });
-            addNewOrderNotification(incoming);
-          }
-        },
-      )
-      .on(
-        "postgres_changes",
-        { event: "UPDATE", schema: "public", table: "orders" },
-        (payload) => {
-          const updated = mapOrder(payload.new as unknown as RawOrder);
-          const isActive = ["new", "preparing", "ready"].includes(updated.status);
-          if (!isActive) {
-            setOrders((prev) => prev.filter((o) => o.id !== updated.id));
+      const channel = supabase
+        .channel(channelName)
+        .on(
+          "postgres_changes",
+          { event: "INSERT", schema: "public", table: "orders" },
+          (payload) => {
+            const incoming = mapOrder(payload.new as RawOrder);
+
+            if (["new", "preparing", "ready"].includes(incoming.status)) {
+              setOrders((prev) => {
+                const next = prev.filter((order) => order.id !== incoming.id);
+                next.unshift(incoming);
+                return next;
+              });
+              addNewOrderNotification(incoming);
+            }
+          },
+        )
+        .on(
+          "postgres_changes",
+          { event: "UPDATE", schema: "public", table: "orders" },
+          (payload) => {
+            const updated = mapOrder(payload.new as unknown as RawOrder);
+            const isActive = ["new", "preparing", "ready"].includes(updated.status);
+            if (!isActive) {
+              setOrders((prev) => prev.filter((o) => o.id !== updated.id));
+              setNewOrderIds((prev) => {
+                const s = new Set(prev);
+                s.delete(updated.id);
+                return s;
+              });
+            } else {
+              setOrders((prev) => prev.map((o) => (o.id === updated.id ? updated : o)));
+            }
+          },
+        )
+        .on(
+          "postgres_changes",
+          { event: "DELETE", schema: "public", table: "orders" },
+          (payload) => {
+            const deleted = payload.old as { id: string };
+            setOrders((prev) => prev.filter((o) => o.id !== deleted.id));
             setNewOrderIds((prev) => {
               const s = new Set(prev);
-              s.delete(updated.id);
+              s.delete(deleted.id);
               return s;
             });
-          } else {
-            setOrders((prev) => prev.map((o) => (o.id === updated.id ? updated : o)));
-          }
-        },
-      )
-      .on(
-        "postgres_changes",
-        { event: "DELETE", schema: "public", table: "orders" },
-        (payload) => {
-          const deleted = payload.old as { id: string };
-          setOrders((prev) => prev.filter((o) => o.id !== deleted.id));
-          setNewOrderIds((prev) => {
-            const s = new Set(prev);
-            s.delete(deleted.id);
-            return s;
+          },
+        );
+
+      activeChannel = channel;
+
+      channel.subscribe((status, err) => {
+        if (process.env.NODE_ENV !== "production") {
+          console.log("[LiveOrders][TEMP DIAG] subscribe status:", status, "isReconnect:", isReconnect, "err:", err);
+        }
+
+        if (err) {
+          console.error("[LiveOrders] subscription error:", err);
+        }
+
+        if (status === "SUBSCRIBED") {
+          isReconnecting = false;
+          // Missed events aren't replayed by Realtime, so reconcile state after a reconnect.
+          // loadOrders()'s merge favors existing prev state and never fires notifications,
+          // so this cannot duplicate the new-order sound/voice/toast or re-notify old orders.
+          if (isReconnect) void loadOrders();
+          return;
+        }
+
+        if (status === "CLOSED" || status === "CHANNEL_ERROR" || status === "TIMED_OUT") {
+          if (isUnmounted || isReconnecting) return;
+          isReconnecting = true;
+
+          const deadChannel = activeChannel;
+          activeChannel = null;
+
+          void supabase.removeChannel(deadChannel!).finally(() => {
+            if (isUnmounted) return;
+            reconnectTimer = window.setTimeout(() => {
+              reconnectTimer = null;
+              subscribeChannel(true);
+            }, 1000);
           });
-        },
-      );
+        }
+      });
+    };
 
-    channel.subscribe((status, err) => {
-      if (err) {
-        console.error("[LiveOrders] subscription error:", err);
-      }
-    });
-
+    subscribeChannel(false);
     void loadOrders();
 
     return () => {
-      void supabase.removeChannel(channel);
+      isUnmounted = true;
+      if (reconnectTimer !== null) window.clearTimeout(reconnectTimer);
+      if (activeChannel) void supabase.removeChannel(activeChannel);
     };
   }, [addNewOrderNotification]);
 
