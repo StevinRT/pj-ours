@@ -453,7 +453,7 @@ export default function LiveOrders({ onPunchOrder }: { onPunchOrder: () => void 
   }
 
   if (status === "CLOSED" || status === "CHANNEL_ERROR" || status === "TIMED_OUT") {
-    console.error("[PJ Ours Realtime] ❌ CHANNEL FAILED:", status, err);
+    console.error("[PJ Ours Realtime] ⚠️ CHANNEL DISCONNECTED - RECONNECTING:", status, err);
 
     if (isUnmounted || isReconnecting) return;
     isReconnecting = true;
