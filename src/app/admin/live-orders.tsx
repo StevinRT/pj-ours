@@ -153,15 +153,8 @@ export default function LiveOrders({ onPunchOrder }: { onPunchOrder: () => void 
     if (typeof window === "undefined") return;
 
     try {
-      const AudioConstructor = window.AudioContext || (window as typeof window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
-      if (!AudioConstructor) return;
-
-      const context = audioContextRef.current ?? new AudioConstructor();
-      audioContextRef.current = context;
-
-      if (context.state === "suspended") {
-        void context.resume();
-      }
+      const context = audioContextRef.current;
+      if (!context || context.state !== "running") return;
 
       const scheduleTone = (frequency: number, startAt: number, length: number, volume: number, shape: OscillatorType) => {
         const oscillator = context.createOscillator();
@@ -333,6 +326,13 @@ export default function LiveOrders({ onPunchOrder }: { onPunchOrder: () => void 
 
   useEffect(() => {
     const supabase = createClient();
+
+    void supabase.auth.getUser().then(({ data, error }) => {
+      console.log("[PJ Ours Auth] USER:", data.user?.id ?? null);
+      console.log("[PJ Ours Auth] EMAIL:", data.user?.email ?? null);
+      console.log("[PJ Ours Auth] ERROR:", error);
+    });
+
     let isUnmounted = false;
     let isReconnecting = false;
     let reconnectTimer: number | null = null;
@@ -376,9 +376,19 @@ export default function LiveOrders({ onPunchOrder }: { onPunchOrder: () => void 
           "postgres_changes",
           { event: "INSERT", schema: "public", table: "orders" },
           (payload) => {
-            const incoming = mapOrder(payload.new as RawOrder);
+  console.log("[LiveOrders] 🔴 REALTIME INSERT RECEIVED:", payload);
 
-            if (["new", "preparing", "ready"].includes(incoming.status)) {
+  const incoming = mapOrder(payload.new as RawOrder);
+
+  console.log("[LiveOrders] Incoming order:", {
+    id: incoming.id,
+    order_number: incoming.order_number,
+    status: incoming.status,
+    source: incoming.source,
+  });
+
+  if (["new", "preparing", "ready"].includes(incoming.status)) {
+    console.log("[LiveOrders] ✅ Adding new order + triggering alert:", incoming.id);
               setOrders((prev) => {
                 const next = prev.filter((order) => order.id !== incoming.id);
                 next.unshift(incoming);
@@ -418,43 +428,50 @@ export default function LiveOrders({ onPunchOrder }: { onPunchOrder: () => void 
               return s;
             });
           },
+        )
+        .on(
+          "postgres_changes",
+          { event: "*", schema: "public", table: "orders" },
+          (payload) => {
+            console.log("[PJ Ours Realtime DEBUG] ANY ORDERS EVENT:", payload);
+          },
         );
 
       activeChannel = channel;
 
       channel.subscribe((status, err) => {
-        if (process.env.NODE_ENV !== "production") {
-          console.log("[LiveOrders][TEMP DIAG] subscribe status:", status, "isReconnect:", isReconnect, "err:", err);
-        }
+        
+  console.log("[PJ Ours Realtime] STATUS:", status);
+  console.log("[PJ Ours Realtime] ERROR:", err);
 
-        if (err) {
-          console.error("[LiveOrders] subscription error:", err);
-        }
+  if (status === "SUBSCRIBED") {
+    console.log("[PJ Ours Realtime] ✅ SUBSCRIBED TO ORDERS");
+    isReconnecting = false;
 
-        if (status === "SUBSCRIBED") {
-          isReconnecting = false;
-          // Missed events aren't replayed by Realtime, so reconcile state after a reconnect.
-          // loadOrders()'s merge favors existing prev state and never fires notifications,
-          // so this cannot duplicate the new-order sound/voice/toast or re-notify old orders.
-          if (isReconnect) void loadOrders();
-          return;
-        }
+    if (isReconnect) void loadOrders();
+    return;
+  }
 
-        if (status === "CLOSED" || status === "CHANNEL_ERROR" || status === "TIMED_OUT") {
-          if (isUnmounted || isReconnecting) return;
-          isReconnecting = true;
+  if (status === "CLOSED" || status === "CHANNEL_ERROR" || status === "TIMED_OUT") {
+    console.error("[PJ Ours Realtime] ❌ CHANNEL FAILED:", status, err);
 
-          const deadChannel = activeChannel;
-          activeChannel = null;
+    if (isUnmounted || isReconnecting) return;
+    isReconnecting = true;
 
-          void supabase.removeChannel(deadChannel!).finally(() => {
-            if (isUnmounted) return;
-            reconnectTimer = window.setTimeout(() => {
-              reconnectTimer = null;
-              subscribeChannel(true);
-            }, 1000);
-          });
-        }
+    const deadChannel = activeChannel;
+    activeChannel = null;
+
+    if (deadChannel) {
+      void supabase.removeChannel(deadChannel).finally(() => {
+        if (isUnmounted) return;
+
+        reconnectTimer = window.setTimeout(() => {
+          reconnectTimer = null;
+          subscribeChannel(true);
+        }, 1000);
+      });
+    }
+  }
       });
     };
 
@@ -480,6 +497,7 @@ export default function LiveOrders({ onPunchOrder }: { onPunchOrder: () => void 
 
   const markDone = async (orderId: string) => {
     const supabase = createClient();
+
     await supabase.from("orders").update({ status: "completed" }).eq("id", orderId);
     setOrders((prev) => prev.filter((o) => o.id !== orderId));
     setNewOrderIds((prev) => {
